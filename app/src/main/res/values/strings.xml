@@ -2,4 +2,7 @@
     <string name="app_name">Sanflix</string>
     <string name="app_version">Version 2.0</string>
 
+    <string name="item_movie">Movie</string>
+    <string name="item_tv_show">Tv Show</string>
+    <string name="item_tv_favorite">Favorite</string>
 </resources>
