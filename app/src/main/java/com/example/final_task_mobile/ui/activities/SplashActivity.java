@@ -1,13 +1,14 @@
 package com.example.final_task_mobile.ui.activities;
 
-import androidx.appcompat.app.AppCompatActivity;
+
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import com.example.final_task_mobile.R;
 
-public class SplashActivity extends AppCompatActivity {
+public class SplashActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

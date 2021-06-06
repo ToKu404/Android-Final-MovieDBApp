@@ -14,5 +14,5 @@
         android:id="@+id/menu_item_favorite"
         android:enabled="true"
         android:icon="@drawable/ic_heart"
-        android:title="@string/item_tv_favorite"/>
+        android:title="@string/item_favorite"/>
 </menu>

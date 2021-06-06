@@ -3,6 +3,8 @@
     <string name="app_version">Version 2.0</string>
 
     <string name="item_movie">Movie</string>
-    <string name="item_tv_show">Tv Show</string>
-    <string name="item_tv_favorite">Favorite</string>
+    88<string name="item_tv_show">Tv Show</string>
+    <string name="item_favorite">Favorite</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
