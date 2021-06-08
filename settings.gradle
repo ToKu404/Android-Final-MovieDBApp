@@ -1,0 +1,2 @@
+rootProject.name = "Final_Task_Mobile"
+include ':app'

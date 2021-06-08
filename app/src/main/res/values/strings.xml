@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Sanflix</string>
+    <string name="app_version">Version 2.0</string>
+
+    <string name="item_movie">Movie</string>
+    <string name="item_tv_show">Tv Show</string>
+    <string name="item_favorite">Favorite</string>
+    <string name="gagal_memuat">Gagal Memuat Data</string>
+    <string name="masalah_sambungan">Masalah koneksi, silahkan muat ulang</string>
+    <string name="bullet">&#8226;</string>
+    <string name="synopsis">Sinopsis</string>
+    <string name="cast">Cast :</string>
+    <string name="similar">Similar Movie :</string>
+    <string name="more">more</string>
+    <string name="watch_trailer">Watch Trailer</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
