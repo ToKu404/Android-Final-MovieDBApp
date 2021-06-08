@@ -22,6 +22,7 @@ import com.example.final_task_mobile.adapters.CastAdapter;
 import com.example.final_task_mobile.adapters.GenreAdapter;
 import com.example.final_task_mobile.adapters.MovieAdapter;
 import com.example.final_task_mobile.adapters.OnItemClickListener;
+import com.example.final_task_mobile.fragments.MovieFragment;
 import com.example.final_task_mobile.models.Cast;
 import com.example.final_task_mobile.models.Genre;
 import com.example.final_task_mobile.models.movie.Movie;
@@ -38,6 +39,7 @@ import java.util.List;
 
 public class DetailMovieActivity extends AppCompatActivity implements View.OnClickListener, OnItemClickListener {
     private MovieRepository movieRepository;
+    private MovieAdapter adapter;
     private List<Cast> listMovieCast;
     private ImageView ivPoster, ivBackdrop;
     private TextView tvTitle, tvYear, tvDuration, tvSinopsis, tvRating, tvMore, tvHeaderSimilar;
@@ -150,8 +152,11 @@ public class DetailMovieActivity extends AppCompatActivity implements View.OnCli
                 if(similarsMovie.size()==0){
                     tvHeaderSimilar.setVisibility(View.GONE);
                 }
+                adapter = new MovieAdapter(similarsMovie);
+                adapter.setClickListener(DetailMovieActivity.this);
+                adapter.notifyDataSetChanged();
                 rvSimilar.setLayoutManager(new LinearLayoutManager(DetailMovieActivity.this, RecyclerView.HORIZONTAL,false));
-                rvSimilar.setAdapter(new MovieAdapter(similarsMovie));
+                rvSimilar.setAdapter(adapter);
             }
         });
     }
@@ -200,7 +205,7 @@ public class DetailMovieActivity extends AppCompatActivity implements View.OnCli
     }
 
     @Override
-    public void onClick(Movie movie) {
+    public void onItemClick(Movie movie) {
         Intent detailActivity = new Intent(this, DetailMovieActivity.class);
         detailActivity.putExtra("ID", movie.getId());
         startActivity(detailActivity);

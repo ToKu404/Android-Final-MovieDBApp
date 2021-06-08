@@ -72,7 +72,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.GridViewHold
 
         @Override
         public void onClick(View v) {
-            clickListener.onClick(movie);
+            clickListener.onItemClick(movie);
         }
     }
 

@@ -48,13 +48,33 @@ public class MovieFragment extends Fragment implements OnItemClickListener, Sear
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_movie, container, false);
         recyclerView = v.findViewById(R.id.rv_movies);
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), 3);
-        recyclerView.setLayoutManager(gridLayoutManager);
         tvProgressBar = v.findViewById(R.id.pb_movie);
         tvNoRecord = v.findViewById(R.id.ll_movie_empty);
         repository = MovieRepository.getRetrofit();
         loadData("", currentPage);
+        onScrollListener();
         return v;
+    }
+
+    private void onScrollListener() {
+        final GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 3);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                int totalItem = layoutManager.getItemCount();
+                int visibleItem = layoutManager.getChildCount();
+                int firstVisibleItem = layoutManager.findFirstVisibleItemPosition();
+                if (firstVisibleItem + visibleItem >= totalItem / 2) {
+                    if (!isFetching) {
+                        isFetching = true;
+                        currentPage++;
+                        loadData("", currentPage);
+                        isFetching = false;
+                    }
+                }
+            }
+        });
     }
 
     @Override
@@ -138,10 +158,9 @@ public class MovieFragment extends Fragment implements OnItemClickListener, Sear
     }
 
     @Override
-    public void onClick(Movie movie) {
+    public void onItemClick(Movie movie) {
         Intent detailActivity = new Intent(getActivity(), DetailMovieActivity.class);
         detailActivity.putExtra("ID", movie.getId());
-        detailActivity.putExtra("SELECTED_FRAGMENT", getBundle());
         startActivity(detailActivity);
     }
 
