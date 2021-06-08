@@ -1,5 +1,6 @@
 package com.example.final_task_mobile.activities;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -8,65 +9,51 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.final_task_mobile.R;
 import com.example.final_task_mobile.adapters.CastAdapter;
 import com.example.final_task_mobile.adapters.GenreAdapter;
 import com.example.final_task_mobile.adapters.MovieAdapter;
-import com.example.final_task_mobile.fragments.MovieFragment;
+import com.example.final_task_mobile.adapters.OnItemClickListener;
 import com.example.final_task_mobile.models.Cast;
 import com.example.final_task_mobile.models.Genre;
 import com.example.final_task_mobile.models.movie.Movie;
 import com.example.final_task_mobile.models.movie.MovieCreditModel;
 import com.example.final_task_mobile.models.movie.MovieDetailModel;
-import com.example.final_task_mobile.models.movie.MovieResponse;
-import com.example.final_task_mobile.models.movie.MovieSimilarResponse;
 import com.example.final_task_mobile.networks.Const;
-import com.example.final_task_mobile.networks.movie.MovieApiClient;
-import com.example.final_task_mobile.networks.movie.MovieApiInterface;
+import com.example.final_task_mobile.repository.MovieRepository;
+import com.example.final_task_mobile.repository.callback.OnMovieCastCallback;
+import com.example.final_task_mobile.repository.callback.OnMovieDetailCallback;
+import com.example.final_task_mobile.repository.callback.OnMovieSimilarsCallback;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
-public class DetailMovieActivity extends AppCompatActivity implements View.OnClickListener, MovieAdapter.OnItemClick {
-    private MovieDetailModel movieDetailModel;
-    private MovieCreditModel creditModel;
+public class DetailMovieActivity extends AppCompatActivity implements View.OnClickListener, OnItemClickListener {
+    private MovieRepository movieRepository;
     private List<Cast> listMovieCast;
-    private List<Movie> listSimilarMovie;
     private ImageView ivPoster, ivBackdrop;
     private TextView tvTitle, tvYear, tvDuration, tvSinopsis, tvRating, tvMore, tvHeaderSimilar;
     private RatingBar ratingBar;
     private RecyclerView rvGenre, rvCast, rvSimilar;
     private ArrayList<String> genres;
-    private String id;
+    private int id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_movie);
 
-        if(getSupportActionBar()!=null){
-            getSupportActionBar().setTitle(getIntent().getStringExtra("TITLE"));
-            ColorDrawable colorDrawable = new ColorDrawable(Color.parseColor("#1A212F"));
-            getSupportActionBar().setBackgroundDrawable(colorDrawable);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
+
         genres = new ArrayList<>();
         listMovieCast = new ArrayList<>();
-        listSimilarMovie = new ArrayList<>();
         ivPoster = findViewById(R.id.iv_mv_poster);
         ivBackdrop = findViewById(R.id.iv_mv_backdrop);
         tvTitle = findViewById(R.id.tv_detail_title);
@@ -80,37 +67,49 @@ public class DetailMovieActivity extends AppCompatActivity implements View.OnCli
         rvGenre = findViewById(R.id.rv_genre);
         rvCast = findViewById(R.id.rv_cast);
         rvSimilar = findViewById(R.id.rv_similar_movie);
-        id = getIntent().getStringExtra("ID");
-        loadData();
+        if (getIntent() != null) {
+            id = getIntent().getIntExtra("ID", 0);
+        }
+        movieRepository = MovieRepository.getRetrofit();
+        loadData(id);
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.action_bar_detail_activity, menu);
+        // TODO: switch favourite button state
+        return super.onCreateOptionsMenu(menu);
     }
 
-    private void loadData() {
-        System.out.println("ID : "+id);
-        MovieApiInterface movieApiInterface = MovieApiClient.getMovieDetail().create(MovieApiInterface.class);
-        Call<MovieDetailModel> movieCall = movieApiInterface.getMovie(id, Const.API_KEY);
-        movieCall.enqueue(new Callback<MovieDetailModel>() {
-            @Override
-            public void onResponse(Call<MovieDetailModel> call, Response<MovieDetailModel> response) {
-                System.out.println("URL :: "+ response.raw().request().url());
-                if (response.isSuccessful()&& response.body() != null)
-                {
-                    movieDetailModel = response.body();
-                    addValue();
-                }
-                else
-                {
-                    Toast.makeText(DetailMovieActivity.this,"Request Error :: " + response.errorBody(), Toast.LENGTH_LONG).show();
-                }
-            }
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                Intent mainActivity = new Intent(DetailMovieActivity.this, MainActivity.class);
+                startActivity(mainActivity);
+                return true;
+            case R.id.item_favorite:
 
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void loadData(int id) {
+
+        movieRepository.getMovieDetail(id, new OnMovieDetailCallback() {
             @Override
-            public void onFailure(Call<MovieDetailModel> call, Throwable t) {
-                Toast.makeText(DetailMovieActivity.this,"Network Error :: " + t.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+            public void onSuccess(MovieDetailModel movie, String message) {
+                addValue(movie);
+            }
+            @Override
+            public void onFailure(String message) {
+
             }
         });
     }
 
-    private void addValue() {
+    private void addValue(MovieDetailModel movieDetailModel) {
+        configureActionBar(movieDetailModel.getTitle());
         tvTitle.setText(movieDetailModel.getTitle());
         tvSinopsis.setText(movieDetailModel.getOverview());
         tvYear.setText(movieDetailModel.getYear());
@@ -124,49 +123,50 @@ public class DetailMovieActivity extends AppCompatActivity implements View.OnCli
         setGenres(movieDetailModel.getGenres());
         rvGenre.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
         rvGenre.setAdapter(new GenreAdapter(genres, this));
-        loadCastData();
-        loadSimilarMovieData();
+        loadCastData(id);
+        loadSimilarMovieData(id);
 
 
     }
 
-    private void loadSimilarMovieData() {
-        MovieApiInterface movieApiInterface = MovieApiClient.getRetrofit().create(MovieApiInterface.class);
-        Call<MovieSimilarResponse> similarCall = movieApiInterface.getSimilarMovie(id, Const.API_KEY);
-        similarCall.enqueue(new Callback<MovieSimilarResponse>() {
+    private void configureActionBar(String title) {
+        if(getSupportActionBar()!=null){
+            getSupportActionBar().setTitle(title);
+            ColorDrawable colorDrawable = new ColorDrawable(Color.parseColor("#1A212F"));
+            getSupportActionBar().setBackgroundDrawable(colorDrawable);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+    }
+
+    private void loadSimilarMovieData(int id) {
+        movieRepository.getMovieSimilar(id, new OnMovieSimilarsCallback() {
             @Override
-            public void onResponse(Call<MovieSimilarResponse> call, Response<MovieSimilarResponse> response) {
-                System.out.println("URL :: "+ response.raw().request().url());
-                    listSimilarMovie = response.body().getSimilarsMovie();
-                    if(listSimilarMovie.size()==0){
-                        tvHeaderSimilar.setVisibility(View.GONE);
-                    }
-                    rvSimilar.setLayoutManager(new LinearLayoutManager(DetailMovieActivity.this, RecyclerView.HORIZONTAL,false));
-                    rvSimilar.setAdapter(new MovieAdapter(listSimilarMovie, DetailMovieActivity.this));
+            public void onFailure(String message) {
+
             }
 
             @Override
-            public void onFailure(Call<MovieSimilarResponse> call, Throwable t) {
-
+            public void onSuccess(List<Movie> similarsMovie) {
+                if(similarsMovie.size()==0){
+                    tvHeaderSimilar.setVisibility(View.GONE);
+                }
+                rvSimilar.setLayoutManager(new LinearLayoutManager(DetailMovieActivity.this, RecyclerView.HORIZONTAL,false));
+                rvSimilar.setAdapter(new MovieAdapter(similarsMovie));
             }
         });
     }
 
-    private void loadCastData() {
-        MovieApiInterface movieApiInterface = MovieApiClient.getRetrofit().create(MovieApiInterface.class);
-        Call<MovieCreditModel> castCall = movieApiInterface.getMovieCast(id, Const.API_KEY);
-        castCall.enqueue(new Callback<MovieCreditModel>() {
+    private void loadCastData(int id) {
+        movieRepository.getMovieCast(id, new OnMovieCastCallback() {
             @Override
-            public void onResponse(Call<MovieCreditModel> call, Response<MovieCreditModel> response) {
-                System.out.println("URL :: "+ response.raw().request().url());
-                creditModel = response.body();
+            public void onSuccess(MovieCreditModel creditModel, String message) {
                 listMovieCast = creditModel.getCast();
                 rvCast.setLayoutManager(new LinearLayoutManager(DetailMovieActivity.this, RecyclerView.HORIZONTAL,false));
                 rvCast.setAdapter(new CastAdapter(listMovieCast, DetailMovieActivity.this));
             }
 
             @Override
-            public void onFailure(Call<MovieCreditModel> call, Throwable t) {
+            public void onFailure(String message) {
 
             }
         });
@@ -200,10 +200,9 @@ public class DetailMovieActivity extends AppCompatActivity implements View.OnCli
     }
 
     @Override
-    public void onClick(int pos) {
+    public void onClick(Movie movie) {
         Intent detailActivity = new Intent(this, DetailMovieActivity.class);
-        detailActivity.putExtra("ID", listSimilarMovie.get(pos).getId());
-        detailActivity.putExtra("TITLE", listSimilarMovie.get(pos).getTitle());
+        detailActivity.putExtra("ID", movie.getId());
         startActivity(detailActivity);
         finish();
     }

@@ -7,9 +7,17 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 public class MovieDetailModel {
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     @SerializedName("id")
     @Expose
-    private String id;
+    private int id;
 
     @SerializedName("poster_path")
     @Expose
@@ -67,13 +75,6 @@ public class MovieDetailModel {
         this.voteAverage = voteAverage;
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public String getPoster() {
         return poster;

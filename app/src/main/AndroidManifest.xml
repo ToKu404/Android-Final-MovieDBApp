@@ -13,7 +13,7 @@
         android:theme="@style/Theme.Final_Task_Mobile"
         android:usesCleartextTraffic="true">
         <activity android:name=".activities.DetailMovieActivity"></activity>
-        <activity android:name=".activities.MainActivity" />
+        <activity android:name=".activities.MainActivity" android:windowSoftInputMode="adjustPan"/>
         <activity android:name=".activities.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

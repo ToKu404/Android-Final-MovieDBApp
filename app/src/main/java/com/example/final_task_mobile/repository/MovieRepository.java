@@ -1,0 +1,166 @@
+package com.example.final_task_mobile.repository;
+
+import androidx.annotation.NonNull;
+
+import com.example.final_task_mobile.models.movie.Movie;
+import com.example.final_task_mobile.models.movie.MovieCreditModel;
+import com.example.final_task_mobile.models.movie.MovieDetailModel;
+import com.example.final_task_mobile.models.movie.MovieResponse;
+import com.example.final_task_mobile.models.movie.MovieSimilarResponse;
+import com.example.final_task_mobile.networks.Const;
+import com.example.final_task_mobile.networks.movie.MovieApiInterface;
+import com.example.final_task_mobile.repository.callback.OnMovieCallback;
+import com.example.final_task_mobile.repository.callback.OnMovieCastCallback;
+import com.example.final_task_mobile.repository.callback.OnMovieDetailCallback;
+import com.example.final_task_mobile.repository.callback.OnMovieSearchCallback;
+import com.example.final_task_mobile.repository.callback.OnMovieSimilarsCallback;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
+public class MovieRepository {
+    private static MovieRepository movieRepository;
+    private MovieApiInterface movieService;
+
+    private MovieRepository(MovieApiInterface movieService){
+        this.movieService = movieService;
+    }
+    public static MovieRepository getRetrofit() {
+        if(movieRepository==null){
+            Retrofit retrofit = new Retrofit.Builder().baseUrl(Const.BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+            movieRepository = new MovieRepository(retrofit.create(MovieApiInterface.class));
+        }
+        return movieRepository;
+    }
+    public void getMovie(String sortBy, int page, final OnMovieCallback callback){
+        movieService.getResult(sortBy, Const.API_KEY, page).enqueue(new Callback<MovieResponse>() {
+
+            @Override
+            public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
+
+                if (response.isSuccessful()) {
+                    if (response.body() != null) {
+                        if (response.body().getMovieResult()!= null) {
+                            callback.onSuccess(response.body().getPage(), response.body().getMovieResult());
+                        } else {
+                            callback.onFailure("response.body().getResults() is null");
+                        }
+                    } else {
+                        callback.onFailure("response.body() is null");
+                    }
+                } else {
+                    callback.onFailure(response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MovieResponse> call, Throwable t) {
+                callback.onFailure(t.getLocalizedMessage());
+            }
+        });
+    }
+
+    public void getMovieDetail(int id, final OnMovieDetailCallback callback) {
+        movieService.getMovie(id, Const.API_KEY)
+                .enqueue(new Callback<MovieDetailModel>() {
+                    @Override
+                    public void onResponse(Call<MovieDetailModel> call, Response<MovieDetailModel> response) {
+                        System.out.println("URL :: "+ response.raw().request().url());
+                        if (response.isSuccessful()) {
+                            if (response.body() != null) {
+                                callback.onSuccess(response.body(), response.message());
+                            } else {
+                                callback.onFailure("response.body() is null");
+                            }
+                        } else {
+                            callback.onFailure(response.message() + ", Error Code : " + response.code());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<MovieDetailModel> call, Throwable t) {
+
+                    }
+                });
+    }
+
+    public void getMovieSimilar(int id, final OnMovieSimilarsCallback callback){
+        movieService.getSimilarMovie(id, Const.API_KEY).enqueue(new Callback<MovieSimilarResponse>() {
+            @Override
+            public void onResponse(Call<MovieSimilarResponse> call, Response<MovieSimilarResponse> response) {
+                System.out.println("URL :: "+ response.raw().request().url());
+                if(response.isSuccessful()) {
+                if(response.body().getSimilarsMovie()!=null){
+                    callback.onSuccess(response.body().getSimilarsMovie());
+                }else {
+                    callback.onFailure("NuLL");
+                }
+                }else {
+                    callback.onFailure("null");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MovieSimilarResponse> call, Throwable t) {
+                callback.onFailure(t.getLocalizedMessage());
+            }
+        });
+    }
+
+    public void getMovieCast(int id, final OnMovieCastCallback callback){
+        movieService.getMovieCast(id, Const.API_KEY).enqueue(new Callback<MovieCreditModel>() {
+            @Override
+            public void onResponse(Call<MovieCreditModel> call, Response<MovieCreditModel> response) {
+                System.out.println("URL :: "+ response.raw().request().url());
+                if (response.isSuccessful()) {
+                    if (response.body() != null) {
+                        callback.onSuccess(response.body(), response.message());
+                    } else {
+                        callback.onFailure("response.body() is null");
+                    }
+                } else {
+                    callback.onFailure(response.message() + ", Error Code : " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MovieCreditModel> call, Throwable t) {
+
+            }
+        });
+    }
+
+
+
+    public void search(String query, int page, final OnMovieSearchCallback callback) {
+        movieService.search(Const.API_KEY, query, page)
+                .enqueue(new Callback<MovieResponse>() {
+                    @Override
+                    public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
+                        if (response.isSuccessful()) {
+                            if (response.body() != null) {
+                                if (response.body().getMovieResult() != null) {
+                                    callback.onSuccess(response.body().getMovieResult(), response.message(), response.body().getPage());
+                                } else {
+                                    callback.onFailure("No Results");
+                                }
+                            } else {
+                                callback.onFailure("response.body() is null");
+                            }
+                        } else {
+                            callback.onFailure(response.message() + " : " + response.code());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<MovieResponse> call, Throwable t) {
+                        callback.onFailure(t.getLocalizedMessage());
+                    }
+                });
+    }
+}

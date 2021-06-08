@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             ColorDrawable colorDrawable = new ColorDrawable(Color.parseColor("#1A212F"));
             getSupportActionBar().setBackgroundDrawable(colorDrawable);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
+            getSupportActionBar().setDisplayUseLogoEnabled(true);
         }
         bottomNavigationItemView.setOnNavigationItemSelectedListener(this);
         bottomNavigationItemView.setSelectedItemId(R.id.menu_item_movie);

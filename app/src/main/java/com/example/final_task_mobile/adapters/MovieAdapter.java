@@ -19,25 +19,30 @@ import java.util.List;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.GridViewHolder> {
     private List<Movie> movieList;
-    private OnItemClick onItemClick;
+    private OnItemClickListener clickListener;
 
-    public MovieAdapter(List<Movie> movieList, OnItemClick onItemClick){
+    public MovieAdapter(List<Movie> movieList){
         this.movieList = movieList;
-        this.onItemClick = onItemClick;
+    }
+    public void setClickListener(OnItemClickListener clickListener) {
+        this.clickListener = clickListener;
     }
 
     @NonNull
     @Override
     public GridViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_movie_recycler, parent, false);
-        return new GridViewHolder(v, onItemClick);
+        return new GridViewHolder(v);
     }
 
     @Override
     public void onBindViewHolder(@NonNull GridViewHolder holder, int position) {
-        Glide.with(holder.itemView.getContext()).load(Const.IMG_URL_200 + movieList.get(position).getImgUrl()).into(holder.ivPoster);
-        holder.tvTitle.setText(movieList.get(position).getTitle());
-        holder.tvVoteAverage.setText(movieList.get(position).getVoteAverage());
+        holder.onBindItemView(movieList.get(position));
+    }
+
+    public void appendList(List<Movie> listToAppend) {
+        movieList.addAll(listToAppend);
+        notifyDataSetChanged();
     }
 
     @Override
@@ -46,27 +51,29 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.GridViewHold
     }
 
     class GridViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        OnItemClick onItemClick;
+        Movie movie;
         ImageView ivPoster;
         TextView tvTitle;
         TextView tvVoteAverage;
 
-        public GridViewHolder(@NonNull View itemView, OnItemClick onItemClick) {
+        public GridViewHolder(@NonNull View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
             ivPoster = itemView.findViewById(R.id.iv_movie_poster);
             tvTitle = itemView.findViewById(R.id.tv_movie_title);
             tvVoteAverage = itemView.findViewById(R.id.tv_movie_vote);
-            this.onItemClick = onItemClick;
+        }
+        void onBindItemView(Movie movie) {
+            this.movie = movie;
+            Glide.with(itemView.getContext()).load(Const.IMG_URL_200 + movie.getImgUrl()).into(ivPoster);
+            tvTitle.setText(movie.getTitle());
+            tvVoteAverage.setText(movie.getVoteAverage());
         }
 
         @Override
         public void onClick(View v) {
-            onItemClick.onClick(getAdapterPosition());
-
+            clickListener.onClick(movie);
         }
     }
-    public interface OnItemClick {
-        void onClick(int pos);
-    }
+
 }

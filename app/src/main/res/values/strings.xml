@@ -13,6 +13,9 @@
     <string name="similar">Similar Movie :</string>
     <string name="more">more</string>
     <string name="watch_trailer">Watch Trailer</string>
+    <string name="search">Search</string>
+    <string name="notify">Notification</string>
+    <string name="hint">Cari Movie</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
