@@ -8,7 +8,10 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,6 +21,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
+import android.widget.Toast;
 
 import com.example.final_task_mobile.activities.DetailMovieActivity;
 import com.example.final_task_mobile.R;
@@ -32,12 +36,13 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class MovieFragment extends Fragment implements OnItemClickListener, SearchView.OnQueryTextListener {
+public class MovieFragment extends Fragment implements OnItemClickListener, SearchView.OnQueryTextListener, SwipeRefreshLayout.OnRefreshListener {
     private static final String TAG = "MovieFragment";
     private RecyclerView recyclerView;
     private MovieAdapter adapter;
+    private SwipeRefreshLayout refreshLayout;
     private ProgressBar tvProgressBar;
-    private LinearLayout tvNoRecord;
+    private LinearLayout llNoRecord;
     private MovieRepository repository;
     private int currentPage = 1;
     private boolean isFetching;
@@ -47,12 +52,14 @@ public class MovieFragment extends Fragment implements OnItemClickListener, Sear
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_movie, container, false);
+        refreshLayout = v.findViewById(R.id.swl_movie);
         recyclerView = v.findViewById(R.id.rv_movies);
         tvProgressBar = v.findViewById(R.id.pb_movie);
-        tvNoRecord = v.findViewById(R.id.ll_movie_empty);
+        llNoRecord = v.findViewById(R.id.ll_movie_empty);
         repository = MovieRepository.getRetrofit();
         loadData("", currentPage);
         onScrollListener();
+        refreshLayout.setOnRefreshListener(this);
         return v;
     }
 
@@ -118,18 +125,29 @@ public class MovieFragment extends Fragment implements OnItemClickListener, Sear
                         adapter.setClickListener(MovieFragment.this);
                         adapter.notifyDataSetChanged();
                         recyclerView.setAdapter(adapter);
+                        tvProgressBar.setVisibility(View.GONE);
+                        llNoRecord.setVisibility(View.GONE);
                     }
                     else{
                         adapter.appendList(movieList);
                     }
                     currentPage = page;
                     isFetching = false;
+                    refreshLayout.setRefreshing(false);
 
                 }
 
                 @Override
                 public void onFailure(String message) {
-                    System.out.println("NULLLL");
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        public void run() {
+                            tvProgressBar.setVisibility(View.GONE);
+                            llNoRecord.setVisibility(View.VISIBLE);
+                        }
+                    }, 3000);
+                    Log.d(TAG, "onFailure: " + message);
+                    Toast.makeText(getActivity(), "Failed " + message, Toast.LENGTH_LONG).show();
                 }
             });
         }else{
@@ -146,6 +164,7 @@ public class MovieFragment extends Fragment implements OnItemClickListener, Sear
                     }
                     currentPage = page;
                     isFetching = false;
+                    refreshLayout.setRefreshing(false);
 
                 }
                 @Override
@@ -179,5 +198,12 @@ public class MovieFragment extends Fragment implements OnItemClickListener, Sear
            loadData("", currentPage);
         }
         return true;
+    }
+
+    @Override
+    public void onRefresh() {
+        adapter = null;
+        currentPage =1;
+        loadData("", currentPage);
     }
 }
