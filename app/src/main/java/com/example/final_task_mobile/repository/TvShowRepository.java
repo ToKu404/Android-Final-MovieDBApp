@@ -2,15 +2,15 @@ package com.example.final_task_mobile.repository;
 
 import com.example.final_task_mobile.models.CreditModel;
 import com.example.final_task_mobile.models.DetailModel;
-import com.example.final_task_mobile.models.movie.MovieResponse;
-import com.example.final_task_mobile.models.movie.MovieSimilarResponse;
+import com.example.final_task_mobile.models.tvshow.TvShowResponse;
+import com.example.final_task_mobile.models.tvshow.TvShowSimilarResponse;
 import com.example.final_task_mobile.networks.Const;
-import com.example.final_task_mobile.networks.MovieApiInterface;
-import com.example.final_task_mobile.repository.callback.OnMovieCallback;
+import com.example.final_task_mobile.networks.TvShowApiInterface;
 import com.example.final_task_mobile.repository.callback.OnCastCallback;
 import com.example.final_task_mobile.repository.callback.OnDetailCallback;
-import com.example.final_task_mobile.repository.callback.OnMovieSearchCallback;
-import com.example.final_task_mobile.repository.callback.OnMovieSimilarsCallback;
+import com.example.final_task_mobile.repository.callback.OnTvShowCallback;
+import com.example.final_task_mobile.repository.callback.OnTvShowSearchCallback;
+import com.example.final_task_mobile.repository.callback.OnTvShowSimilarsCallback;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -18,32 +18,31 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class MovieRepository {
-    private static MovieRepository movieRepository;
-    private MovieApiInterface movieService;
+public class TvShowRepository {
+    private static TvShowRepository tvRepository;
+    private TvShowApiInterface tvService;
 
-    private MovieRepository(MovieApiInterface movieService){
-        this.movieService = movieService;
+    private TvShowRepository(TvShowApiInterface tvService){
+        this.tvService = tvService;
     }
-    public static MovieRepository getRetrofit() {
-        if(movieRepository==null){
+    public static TvShowRepository getRetrofit() {
+        if(tvRepository==null){
             Retrofit retrofit = new Retrofit.Builder().baseUrl(Const.BASE_URL)
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
-            movieRepository = new MovieRepository(retrofit.create(MovieApiInterface.class));
+            tvRepository = new TvShowRepository(retrofit.create(TvShowApiInterface.class));
         }
-        return movieRepository;
+        return tvRepository;
     }
-    public void getMovie(String sortBy, int page, final OnMovieCallback callback){
-        movieService.getResult(sortBy, Const.API_KEY, page).enqueue(new Callback<MovieResponse>() {
-
+    public void getTvShow(String sortBy, int page, final OnTvShowCallback callback){
+        tvService.getResult(sortBy, Const.API_KEY, page).enqueue(new Callback<TvShowResponse>() {
             @Override
-            public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
-
+            public void onResponse(Call<TvShowResponse> call, Response<TvShowResponse> response) {
+                System.out.println("URL :: "+ response.raw().request().url());
                 if (response.isSuccessful()) {
                     if (response.body() != null) {
-                        if (response.body().getMovieResult()!= null) {
-                            callback.onSuccess(response.body().getPage(), response.body().getMovieResult());
+                        if (response.body().getTvShowResult()!= null) {
+                            callback.onSuccess(response.body().getPage(), response.body().getTvShowResult());
                         } else {
                             callback.onFailure("response.body().getResults() is null");
                         }
@@ -56,14 +55,14 @@ public class MovieRepository {
             }
 
             @Override
-            public void onFailure(Call<MovieResponse> call, Throwable t) {
+            public void onFailure(Call<TvShowResponse> call, Throwable t) {
                 callback.onFailure(t.getLocalizedMessage());
             }
         });
     }
 
-    public void getMovieDetail(int id, final OnDetailCallback callback) {
-        movieService.getMovie(id, Const.API_KEY)
+    public void getTvShowDetail(int id, final OnDetailCallback callback) {
+        tvService.getTvShow(id, Const.API_KEY)
                 .enqueue(new Callback<DetailModel>() {
                     @Override
                     public void onResponse(Call<DetailModel> call, Response<DetailModel> response) {
@@ -86,14 +85,14 @@ public class MovieRepository {
                 });
     }
 
-    public void getMovieSimilar(int id, final OnMovieSimilarsCallback callback){
-        movieService.getSimilarMovie(id, Const.API_KEY).enqueue(new Callback<MovieSimilarResponse>() {
+    public void getTvShowSimilar(int id, final OnTvShowSimilarsCallback callback){
+        tvService.getSimilarTvShow(id, Const.API_KEY).enqueue(new Callback<TvShowSimilarResponse>() {
             @Override
-            public void onResponse(Call<MovieSimilarResponse> call, Response<MovieSimilarResponse> response) {
-                System.out.println("URL :: "+ response.raw().request().url());
+            public void onResponse(Call<TvShowSimilarResponse> call, Response<TvShowSimilarResponse> response) {
+
                 if(response.isSuccessful()) {
-                if(response.body().getSimilarsMovie()!=null){
-                    callback.onSuccess(response.body().getSimilarsMovie());
+                if(response.body().getSimilarsTvShow()!=null){
+                    callback.onSuccess(response.body().getSimilarsTvShow());
                 }else {
                     callback.onFailure("NuLL");
                 }
@@ -103,17 +102,17 @@ public class MovieRepository {
             }
 
             @Override
-            public void onFailure(Call<MovieSimilarResponse> call, Throwable t) {
+            public void onFailure(Call<TvShowSimilarResponse> call, Throwable t) {
                 callback.onFailure(t.getLocalizedMessage());
             }
         });
     }
 
-    public void getMovieCast(int id, final OnCastCallback callback){
-        movieService.getMovieCast(id, Const.API_KEY).enqueue(new Callback<CreditModel>() {
+    public void getTvShowCast(int id, final OnCastCallback callback){
+        tvService.getTvCast(id, Const.API_KEY).enqueue(new Callback<CreditModel>() {
             @Override
             public void onResponse(Call<CreditModel> call, Response<CreditModel> response) {
-
+                System.out.println("URL :: "+ response.raw().request().url());
                 if (response.isSuccessful()) {
                     if (response.body() != null) {
                         callback.onSuccess(response.body(), response.message());
@@ -134,16 +133,15 @@ public class MovieRepository {
 
 
 
-    public void search(String query, int page, final OnMovieSearchCallback callback) {
-        movieService.search(Const.API_KEY, query, page)
-                .enqueue(new Callback<MovieResponse>() {
+    public void search(String query, int page, final OnTvShowSearchCallback callback) {
+        tvService.search(Const.API_KEY, query, page)
+                .enqueue(new Callback<TvShowResponse>() {
                     @Override
-                    public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
-                        System.out.println("URL :: "+ response.raw().request().url());
+                    public void onResponse(Call<TvShowResponse> call, Response<TvShowResponse> response) {
                         if (response.isSuccessful()) {
                             if (response.body() != null) {
-                                if (response.body().getMovieResult() != null) {
-                                    callback.onSuccess(response.body().getMovieResult(), response.message(), response.body().getPage());
+                                if (response.body().getTvShowResult() != null) {
+                                    callback.onSuccess(response.body().getTvShowResult(), response.message(), response.body().getPage());
                                 } else {
                                     callback.onFailure("No Results");
                                 }
@@ -156,7 +154,7 @@ public class MovieRepository {
                     }
 
                     @Override
-                    public void onFailure(Call<MovieResponse> call, Throwable t) {
+                    public void onFailure(Call<TvShowResponse> call, Throwable t) {
                         callback.onFailure(t.getLocalizedMessage());
                     }
                 });

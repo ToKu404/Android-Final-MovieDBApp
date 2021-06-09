@@ -1,4 +1,4 @@
-package com.example.final_task_mobile.models.movie;
+package com.example.final_task_mobile.models;
 
 import com.example.final_task_mobile.models.Genre;
 import com.google.gson.annotations.Expose;
@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class MovieDetailModel {
+public class DetailModel {
     public int getId() {
         return id;
     }
@@ -15,6 +15,16 @@ public class MovieDetailModel {
         this.id = id;
     }
 
+
+    public String getEps() {
+        String episode = String.valueOf(eps)+" eps";
+        return episode;
+    }
+
+    @SerializedName("number_of_episodes")
+    private int eps;
+
+    private String status;
     @SerializedName("id")
     @Expose
     private int id;
@@ -46,6 +56,9 @@ public class MovieDetailModel {
     @SerializedName("runtime")
     @Expose
     private String duration;
+
+
+    private String name;
 
     @SerializedName("genres")
     @Expose
@@ -92,12 +105,11 @@ public class MovieDetailModel {
     }
 
     public String getTitle() {
+        String title = this.title != null ? this.title:this.name;
         return title;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+
 
     public Float getRating() {
         Float rating = ((Float.parseFloat(voteAverage))/10)*5;
@@ -114,5 +126,9 @@ public class MovieDetailModel {
 
     public void setGenres(List<Genre> genres) {
         this.genres = genres;
+    }
+
+    public String getStatus() {
+        return status;
     }
 }

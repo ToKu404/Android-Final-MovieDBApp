@@ -1,7 +1,7 @@
-package com.example.final_task_mobile.networks.movie;
+package com.example.final_task_mobile.networks;
 
-import com.example.final_task_mobile.models.movie.MovieCreditModel;
-import com.example.final_task_mobile.models.movie.MovieDetailModel;
+import com.example.final_task_mobile.models.CreditModel;
+import com.example.final_task_mobile.models.DetailModel;
 import com.example.final_task_mobile.models.movie.MovieResponse;
 import com.example.final_task_mobile.models.movie.MovieSimilarResponse;
 
@@ -19,7 +19,7 @@ public interface MovieApiInterface {
     );
 
     @GET("movie/{movie_id}")
-    Call<MovieDetailModel> getMovie(
+    Call<DetailModel> getMovie(
             @Path("movie_id") int id,
             @Query("api_key") String apiKey
     );
@@ -32,7 +32,7 @@ public interface MovieApiInterface {
     );
 
     @GET("movie/{movie_id}/credits")
-    Call<MovieCreditModel> getMovieCast (
+    Call<CreditModel> getMovieCast (
             @Path("movie_id") int id,
             @Query("api_key") String apiKey
     );

@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             getSupportActionBar().setDisplayUseLogoEnabled(true);
         }
         bottomNavigationItemView.setOnNavigationItemSelectedListener(this);
-        bottomNavigationItemView.setSelectedItemId(R.id.menu_item_movie);
+        bottomNavigationItemView.setSelectedItemId(R.id.menu_item_tv);
 
     }
 
@@ -53,13 +53,13 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 break;
         }
         if(fragment != null){
-            getSupportFragmentManager().beginTransaction().replace(R.id.fl_main, fragment).commit();
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fl_main, fragment)
+                    .commit();
             return true;
         }
-
         return true;
     }
-
     private void setActionBarTitle(String title) {
         title = title.replaceAll("\\s","");
         title += ".";
@@ -68,6 +68,4 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         getSupportActionBar().setTitle(Html.fromHtml(first+"<font color=\"#2C83F5\">"+end+"</font>"));
     }
 
-    public void nothing_happen(View view) {
-    }
 }

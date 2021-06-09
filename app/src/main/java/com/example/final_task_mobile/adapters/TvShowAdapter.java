@@ -11,20 +11,19 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.final_task_mobile.R;
-import com.example.final_task_mobile.models.movie.Movie;
+import com.example.final_task_mobile.models.tvshow.TvShow;
 import com.example.final_task_mobile.networks.Const;
-
 
 import java.util.List;
 
-public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.GridViewHolder> {
-    private List<Movie> movieList;
-    private OnMovieItemClickListener clickListener;
+public class TvShowAdapter extends RecyclerView.Adapter<TvShowAdapter.GridViewHolder> {
+    private List<TvShow> tvShowList;
+    private OnTvShowItemClickListener clickListener;
 
-    public MovieAdapter(List<Movie> movieList){
-        this.movieList = movieList;
+    public TvShowAdapter(List<TvShow> tvShowList){
+        this.tvShowList = tvShowList;
     }
-    public void setClickListener(OnMovieItemClickListener clickListener) {
+    public void setClickListener(OnTvShowItemClickListener clickListener) {
         this.clickListener = clickListener;
     }
 
@@ -37,21 +36,21 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.GridViewHold
 
     @Override
     public void onBindViewHolder(@NonNull GridViewHolder holder, int position) {
-        holder.onBindItemView(movieList.get(position));
+        holder.onBindItemView(tvShowList.get(position));
     }
 
-    public void appendList(List<Movie> listToAppend) {
-        movieList.addAll(listToAppend);
+    public void appendList(List<TvShow> listToAppend) {
+        tvShowList.addAll(listToAppend);
         notifyDataSetChanged();
     }
 
     @Override
     public int getItemCount() {
-        return movieList.size();
+        return tvShowList.size();
     }
 
     class GridViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        Movie movie;
+        TvShow tvShow;
         ImageView ivPoster;
         TextView tvTitle;
         TextView tvVoteAverage;
@@ -63,16 +62,17 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.GridViewHold
             tvTitle = itemView.findViewById(R.id.tv_main_card_title);
             tvVoteAverage = itemView.findViewById(R.id.tv_main_card_vote);
         }
-        void onBindItemView(Movie movie) {
-            this.movie = movie;
-            Glide.with(itemView.getContext()).load(Const.IMG_URL_200 + movie.getImgUrl()).into(ivPoster);
-            tvTitle.setText(movie.getTitle());
-            tvVoteAverage.setText(movie.getVoteAverage());
+        void onBindItemView(TvShow tvShow) {
+            this.tvShow = tvShow;
+            Glide.with(itemView.getContext()).load(Const.IMG_URL_200 + tvShow.getImgUrl()).into(ivPoster);
+            tvTitle.setText(tvShow.getTitle());
+            tvVoteAverage.setText(tvShow.getVoteAverage());
         }
+
 
         @Override
         public void onClick(View v) {
-            clickListener.onItemClick(movie);
+            clickListener.onItemClick(tvShow);
         }
     }
 

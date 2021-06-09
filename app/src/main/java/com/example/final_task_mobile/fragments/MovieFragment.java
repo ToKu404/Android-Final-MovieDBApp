@@ -23,10 +23,10 @@ import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.Toast;
 
-import com.example.final_task_mobile.activities.DetailMovieActivity;
+import com.example.final_task_mobile.activities.DetailActivity;
 import com.example.final_task_mobile.R;
 import com.example.final_task_mobile.adapters.MovieAdapter;
-import com.example.final_task_mobile.adapters.OnItemClickListener;
+import com.example.final_task_mobile.adapters.OnMovieItemClickListener;
 import com.example.final_task_mobile.models.movie.Movie;
 import com.example.final_task_mobile.repository.MovieRepository;
 import com.example.final_task_mobile.repository.callback.OnMovieCallback;
@@ -36,8 +36,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class MovieFragment extends Fragment implements OnItemClickListener, SearchView.OnQueryTextListener, SwipeRefreshLayout.OnRefreshListener {
-    private static final String TAG = "MovieFragment";
+public class MovieFragment extends Fragment implements OnMovieItemClickListener, SearchView.OnQueryTextListener, SwipeRefreshLayout.OnRefreshListener {
+    private static final String TAG = "movie";
+    private static final String SORT_BY = "popular";
     private RecyclerView recyclerView;
     private MovieAdapter adapter;
     private SwipeRefreshLayout refreshLayout;
@@ -91,33 +92,30 @@ public class MovieFragment extends Fragment implements OnItemClickListener, Sear
     }
 
     @Override
-    public void onCreateOptionsMenu(@NonNull @NotNull Menu menu, @NonNull @NotNull MenuInflater inflater) {
-        inflater.inflate(R.menu.action_bar_fragment, menu);
+    public void onPrepareOptionsMenu(@NonNull @NotNull Menu menu) {
+        menu.clear();
+        getActivity().getMenuInflater().inflate(R.menu.action_bar_fragment, menu);
         MenuItem item = menu.findItem(R.id.item_search);
         SearchView searchView = null;
         if(item!=null){
             searchView = (SearchView) item.getActionView();
             searchView.setIconifiedByDefault(false);
+            searchView.requestFocus();
         }
         if(searchView!=null){
             searchView.setQueryHint(getString(R.string.hint));
             searchView.setOnQueryTextListener(this);
 
         }
-        super.onCreateOptionsMenu(menu, inflater);
+        super.onPrepareOptionsMenu(menu);
     }
 
-    private String getBundle() {
-        if (getArguments() != null) {
-            return getArguments().getString("SORT_BY");
-        }
-        return "now_playing";
-    }
+
 
     private void loadData(String query, int page) {
         isFetching = true;
         if(query.equals("")){
-            repository.getMovie(getBundle(), page, new OnMovieCallback() {
+            repository.getMovie(SORT_BY, page, new OnMovieCallback() {
                 @Override
                 public void onSuccess(int page, List<Movie> movieList) {
                     if(adapter == null){
@@ -125,12 +123,12 @@ public class MovieFragment extends Fragment implements OnItemClickListener, Sear
                         adapter.setClickListener(MovieFragment.this);
                         adapter.notifyDataSetChanged();
                         recyclerView.setAdapter(adapter);
-                        tvProgressBar.setVisibility(View.GONE);
                         llNoRecord.setVisibility(View.GONE);
                     }
                     else{
                         adapter.appendList(movieList);
                     }
+                    tvProgressBar.setVisibility(View.GONE);
                     currentPage = page;
                     isFetching = false;
                     refreshLayout.setRefreshing(false);
@@ -178,13 +176,15 @@ public class MovieFragment extends Fragment implements OnItemClickListener, Sear
 
     @Override
     public void onItemClick(Movie movie) {
-        Intent detailActivity = new Intent(getActivity(), DetailMovieActivity.class);
+        Intent detailActivity = new Intent(getActivity(), DetailActivity.class);
         detailActivity.putExtra("ID", movie.getId());
+        detailActivity.putExtra("TYPE", TAG);
         startActivity(detailActivity);
     }
 
     @Override
     public boolean onQueryTextSubmit(String query) {
+        setMenuVisibility(false);
         return false;
     }
 
@@ -192,10 +192,16 @@ public class MovieFragment extends Fragment implements OnItemClickListener, Sear
     public boolean onQueryTextChange(String newText) {
         if (newText.length() > 0) {
             adapter = null;
+            tvProgressBar.setVisibility(View.VISIBLE);
             loadData(newText, currentPage);
         } else {
             adapter = null;
+            tvProgressBar.setVisibility(View.VISIBLE);
            loadData("", currentPage);
+        }
+
+        if(!isVisible()){
+            return true;
         }
         return true;
     }
@@ -204,6 +210,7 @@ public class MovieFragment extends Fragment implements OnItemClickListener, Sear
     public void onRefresh() {
         adapter = null;
         currentPage =1;
+        tvProgressBar.setVisibility(View.VISIBLE);
         loadData("", currentPage);
     }
 }

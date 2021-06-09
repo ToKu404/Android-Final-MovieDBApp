@@ -1,11 +1,11 @@
-package com.example.final_task_mobile.models.movie;
+package com.example.final_task_mobile.models;
 
 
 import com.example.final_task_mobile.models.Cast;
 
 import java.util.List;
 
-public class MovieCreditModel {
+public class CreditModel {
     public int getId() {
         return id;
     }
