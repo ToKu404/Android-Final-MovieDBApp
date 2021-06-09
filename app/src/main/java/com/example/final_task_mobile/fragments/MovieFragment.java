@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -137,7 +138,7 @@ public class MovieFragment extends Fragment implements OnMovieItemClickListener,
 
                 @Override
                 public void onFailure(String message) {
-                    Handler handler = new Handler();
+                    Handler handler = new Handler(Looper.getMainLooper());
                     handler.postDelayed(new Runnable() {
                         public void run() {
                             tvProgressBar.setVisibility(View.GONE);
