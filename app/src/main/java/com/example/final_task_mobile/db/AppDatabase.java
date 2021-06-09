@@ -10,7 +10,7 @@ import com.example.final_task_mobile.db.dao.FavoriteDao;
 import com.example.final_task_mobile.db.table.FavoriteMovie;
 import com.example.final_task_mobile.db.table.FavoriteTv;
 
-@Database(entities = {FavoriteMovie.class, FavoriteTv.class}, version = 2)
+@Database(entities = {FavoriteMovie.class, FavoriteTv.class}, version = 2, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
     public abstract FavoriteDao favoriteDao();
 
