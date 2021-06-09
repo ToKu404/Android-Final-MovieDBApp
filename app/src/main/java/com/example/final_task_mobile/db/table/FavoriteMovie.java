@@ -43,15 +43,29 @@ public class FavoriteMovie implements Serializable {
     @ColumnInfo(name = "img_path")
     private String imgPath;
 
+    public Float getRate() {
+        return rate;
+    }
+
+    public void setRate(Float rate) {
+        this.rate = rate;
+    }
+
+    @ColumnInfo(name = "rate")
+    private Float rate;
+
+
+
     public FavoriteMovie(){}
 
     public FavoriteMovie(int id){
         this.id = id;
     }
-    public FavoriteMovie(int id, String title, String imgPath){
+    public FavoriteMovie(int id, String title, String imgPath, Float rate){
         this.id = id;
         this.title = title;
         this.imgPath = imgPath;
+        this.rate = rate;
     }
 
 

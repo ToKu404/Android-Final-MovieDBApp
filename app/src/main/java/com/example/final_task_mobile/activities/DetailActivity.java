@@ -2,11 +2,13 @@ package com.example.final_task_mobile.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.Menu;
@@ -15,6 +17,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.final_task_mobile.R;
@@ -25,6 +28,8 @@ import com.example.final_task_mobile.adapters.OnMovieItemClickListener;
 import com.example.final_task_mobile.adapters.OnTvShowItemClickListener;
 import com.example.final_task_mobile.adapters.TvShowAdapter;
 import com.example.final_task_mobile.db.AppDatabase;
+import com.example.final_task_mobile.db.table.FavoriteMovie;
+import com.example.final_task_mobile.db.table.FavoriteTv;
 import com.example.final_task_mobile.models.Cast;
 import com.example.final_task_mobile.models.Genre;
 import com.example.final_task_mobile.models.movie.Movie;
@@ -55,16 +60,15 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     private ArrayList<String> genres;
     private String selectedFragment;
     private int id;
-    private MenuItem itemFav;
-    private boolean isFavorite = false;
     private String favoriteTitle, favoriteImgPath;
+    private Float favoriteRate;
     private AppDatabase roomDatabase;
+    private Boolean isFavorite = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_movie);
-
         genres = new ArrayList<>();
         listCast = new ArrayList<>();
         ivPoster = findViewById(R.id.iv_mv_poster);
@@ -90,8 +94,23 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.action_bar_detail_activity, menu);
-        itemFav = menu.findItem(R.id.item_favorite);
+        checkIsFavorite(selectedFragment, menu);
         return super.onCreateOptionsMenu(menu);
+    }
+
+    private void checkIsFavorite(String selectedFragment, Menu menu) {
+        if(selectedFragment.equals("movie")){
+            isFavorite = roomDatabase.favoriteDao().isMovieExists(id);
+        }else{
+            isFavorite = roomDatabase.favoriteDao().isTvExists(id);
+        }
+
+        if(!isFavorite){
+            menu.getItem(0).setIcon(ContextCompat.getDrawable(this,R.drawable.ic_baseline_favorite_border_24));
+        }else{
+            menu.getItem(0).setIcon(ContextCompat.getDrawable(this,R.drawable.ic_baseline_favorite_24));
+            menu.getItem(0).getIcon().setColorFilter(getResources().getColor(R.color.favRed), PorterDuff.Mode.SRC_ATOP);
+        }
     }
 
     @Override
@@ -115,16 +134,56 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 startActivity(mainActivity);
                 return true;
             case R.id.item_favorite:
-                isFavorite = !isFavorite;
-                if(isFavorite){
-                    itemFav.setIcon(R.drawable.ic_baseline_favorite_24);
-                }else{
-                    itemFav.setIcon(R.drawable.ic_baseline_favorite_border_24);
-                }
-
+                addToFavorite(selectedFragment, id, item);
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void addToFavorite(String type, int id, MenuItem itemFav) {
+        int dataId = id;
+        if(type.equals("movie")){
+            boolean isFavorite = roomDatabase.favoriteDao().isMovieExists(dataId);
+            if(isFavorite){
+                FavoriteMovie favoriteMovie = roomDatabase.favoriteDao().findByMovieId(dataId);
+                roomDatabase.favoriteDao().deleteFavoriteMovie(favoriteMovie).subscribe(()->{
+                    itemFav.setIcon(R.drawable.ic_baseline_favorite_border_24);
+                    Toast.makeText(this, "Remove From Favorit", Toast.LENGTH_SHORT).show();
+                },throwable->{
+                    Toast.makeText(this, "Operation Failed", Toast.LENGTH_SHORT).show();
+                });
+            }else{
+                FavoriteMovie favoriteMovie = new FavoriteMovie(dataId, favoriteTitle, favoriteImgPath,favoriteRate);
+                roomDatabase.favoriteDao().addFavoriteMovie(favoriteMovie).subscribe(()->{
+                    itemFav.setIcon(R.drawable.ic_baseline_favorite_24);
+                    itemFav.getIcon().setColorFilter(getResources().getColor(R.color.favRed), PorterDuff.Mode.SRC_ATOP);
+                    Toast.makeText(this, "Add to Favorite", Toast.LENGTH_SHORT).show();
+                },throwable->{
+                    Toast.makeText(this, "Failed to add", Toast.LENGTH_SHORT).show();
+                });
+            }
+        }else {
+            boolean isFavorite = roomDatabase.favoriteDao().isTvExists(dataId);
+            if(isFavorite){
+                FavoriteTv favoriteTv = roomDatabase.favoriteDao().findByTvId(dataId);
+                roomDatabase.favoriteDao().deleteFavoriteTv(favoriteTv).subscribe(()->{
+                    itemFav.setIcon(R.drawable.ic_baseline_favorite_border_24);
+                    Toast.makeText(this, "Remove From Favorit", Toast.LENGTH_SHORT).show();
+                },throwable->{
+                    Toast.makeText(this, "Operation Failed", Toast.LENGTH_SHORT).show();
+                });
+            }else{
+                FavoriteTv favoriteTv = new FavoriteTv(dataId, favoriteTitle, favoriteImgPath, favoriteRate);
+                roomDatabase.favoriteDao().addFavoriteTvShow(favoriteTv).subscribe(()->{
+                    itemFav.setIcon(R.drawable.ic_baseline_favorite_24);
+                    itemFav.getIcon().setColorFilter(getResources().getColor(R.color.favRed), PorterDuff.Mode.SRC_ATOP);
+                    Toast.makeText(this, "Add to Favorite", Toast.LENGTH_SHORT).show();
+                },throwable->{
+                    Toast.makeText(this, "Failed to add", Toast.LENGTH_SHORT).show();
+                });
+            }
+        }
+
     }
 
     private void loadData(int id, String type) {
@@ -155,6 +214,9 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void addValue(DetailModel detailModel, String type) {
+        favoriteTitle = detailModel.getTitle();
+        favoriteImgPath = detailModel.getPoster();
+        favoriteRate = Float.valueOf(detailModel.getVoteAverage());
         configureActionBar(detailModel.getTitle());
         tvTitle.setText(detailModel.getTitle());
         tvSinopsis.setText(detailModel.getOverview());
