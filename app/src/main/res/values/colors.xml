@@ -9,6 +9,7 @@
     <color name="white">#FFFFFFFF</color>
 
     <color name="mainBlue">#FF2C83F5</color>
+    <color name="favRed">#FFA83F39</color>
     <color name="backgroundBlue">#FF1A212F</color>
     <color name="synopsisBlue">#FF292B30</color>
     <color name="transBlue">#732C83F5</color>

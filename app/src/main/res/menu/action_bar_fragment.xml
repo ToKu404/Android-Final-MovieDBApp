@@ -11,11 +11,5 @@
         app:actionViewClass="android.widget.SearchView"
         app:showAsAction="ifRoom|collapseActionView" />
 
-    <item
-        android:id="@+id/item_notif"
-        android:iconTint="@color/mainGray"
-        android:icon="@drawable/ic_baseline_notifications_24"
-        android:title="@string/notify"
-        app:showAsAction="ifRoom"/>
 </menu>
 
