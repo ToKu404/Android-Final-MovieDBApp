@@ -158,8 +158,8 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             tvDuration.setText(detailModel.getDuration());
         }
         if(type.equals("tv")){
-            tvYear.setText(detailModel.getStatus());
-            tvDuration.setText(detailModel.getEps());
+            tvYear.setText(detailModel.getEps());
+            tvDuration.setText(detailModel.getStatus());
         }
 
         loadCastData(id, type);
