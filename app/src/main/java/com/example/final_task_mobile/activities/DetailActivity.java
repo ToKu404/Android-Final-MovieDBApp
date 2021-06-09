@@ -24,6 +24,7 @@ import com.example.final_task_mobile.adapters.MovieAdapter;
 import com.example.final_task_mobile.adapters.OnMovieItemClickListener;
 import com.example.final_task_mobile.adapters.OnTvShowItemClickListener;
 import com.example.final_task_mobile.adapters.TvShowAdapter;
+import com.example.final_task_mobile.db.AppDatabase;
 import com.example.final_task_mobile.models.Cast;
 import com.example.final_task_mobile.models.Genre;
 import com.example.final_task_mobile.models.movie.Movie;
@@ -54,6 +55,10 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     private ArrayList<String> genres;
     private String selectedFragment;
     private int id;
+    private MenuItem itemFav;
+    private boolean isFavorite = false;
+    private String favoriteTitle, favoriteImgPath;
+    private AppDatabase roomDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,24 +83,28 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         if (getIntent() != null) {
             id = getIntent().getIntExtra("ID", 0);
         }
+        roomDatabase = AppDatabase.getInstance(getApplicationContext());
         movieRepository = MovieRepository.getRetrofit();
         tvShowRepository = TvShowRepository.getRetrofit();
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.action_bar_detail_activity, menu);
-        // TODO: switch favourite button state
+        itemFav = menu.findItem(R.id.item_favorite);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+        favoriteImgPath = "";
+        favoriteTitle = "";
         if (getIntent() != null) {
             id = getIntent().getIntExtra("ID", 0);
             selectedFragment = getIntent().getStringExtra("TYPE");
             loadData(id, selectedFragment);
         }
+
     }
 
     @Override
@@ -106,6 +115,12 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 startActivity(mainActivity);
                 return true;
             case R.id.item_favorite:
+                isFavorite = !isFavorite;
+                if(isFavorite){
+                    itemFav.setIcon(R.drawable.ic_baseline_favorite_24);
+                }else{
+                    itemFav.setIcon(R.drawable.ic_baseline_favorite_border_24);
+                }
 
                 return true;
         }
