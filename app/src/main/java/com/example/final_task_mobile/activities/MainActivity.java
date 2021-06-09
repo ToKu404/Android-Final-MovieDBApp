@@ -68,4 +68,5 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         getSupportActionBar().setTitle(Html.fromHtml(first+"<font color=\"#2C83F5\">"+end+"</font>"));
     }
 
+    public void nothing_happen(View view) {}
 }
