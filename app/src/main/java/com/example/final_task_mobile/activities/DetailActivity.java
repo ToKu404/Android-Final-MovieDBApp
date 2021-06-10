@@ -158,10 +158,6 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
-            case android.R.id.home:
-                Intent mainActivity = new Intent(DetailActivity.this, MainActivity.class);
-                startActivity(mainActivity);
-                return true;
             case R.id.item_favorite:
                 addToFavorite(item);
                 return true;
@@ -351,6 +347,11 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         detailActivity.putExtra("TYPE", selectedFragment);
         startActivity(detailActivity);
         finish();
+    }
 
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 }
