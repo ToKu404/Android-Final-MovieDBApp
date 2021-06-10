@@ -58,9 +58,6 @@ public class FavoriteMovie implements Serializable {
 
     public FavoriteMovie(){}
 
-    public FavoriteMovie(int id){
-        this.id = id;
-    }
     public FavoriteMovie(int id, String title, String imgPath, Float rate){
         this.id = id;
         this.title = title;

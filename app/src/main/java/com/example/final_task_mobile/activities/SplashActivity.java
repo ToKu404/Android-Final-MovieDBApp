@@ -31,7 +31,7 @@ public class SplashActivity extends Activity {
                 startActivity(mainIntent);
                 finish();
             }
-        }, 3000);
+        }, 2000);
     }
 
     @Override

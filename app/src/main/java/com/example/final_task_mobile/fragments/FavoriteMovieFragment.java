@@ -9,6 +9,7 @@ import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,7 +31,7 @@ public class FavoriteMovieFragment extends Fragment {
     private RecyclerView recyclerView;
     private AppDatabase database;
     private LinearLayout llNoRecord;
-    private List<FavoriteMovie> favoriteMovieList = new ArrayList<>();
+    private List<FavoriteMovie> favoriteMovieList;
 
     public FavoriteMovieFragment() {
     }
@@ -41,12 +42,13 @@ public class FavoriteMovieFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_favorite_page, container, false);
         database = AppDatabase.getInstance(getActivity().getApplicationContext());
-        loadData();
+
+
         llNoRecord = view.findViewById(R.id.ll_fav_empty);
         llNoRecord.setVisibility(View.GONE);
         recyclerView = view.findViewById(R.id.rv_favorite);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        setData();
+        loadData();
         System.out.println("ON CREATE VIEW");
         return view;
     }
@@ -57,25 +59,17 @@ public class FavoriteMovieFragment extends Fragment {
         super.onResume();
         System.out.println("ON RESUME");
         loadData();
-        setData();
-
-    }
-
-
-    private void setData() {
-//        if(favoriteMovieList.size()==0){
-            llNoRecord.setVisibility(View.VISIBLE);
-//        }else{
-            llNoRecord.setVisibility(View.GONE);
-            recyclerView.setAdapter(new FavMovieAdapter(favoriteMovieList));
-//        }
     }
 
     private void loadData() {
-        database.favoriteDao().getAllMovie().observe(getActivity(), new Observer<List<FavoriteMovie>>() {
+        llNoRecord.setVisibility(View.GONE);
+        database.favoriteDao().getAllMovie().observe(getViewLifecycleOwner(), new Observer<List<FavoriteMovie>>() {
             @Override
             public void onChanged(List<FavoriteMovie> favoriteMovies) {
                 favoriteMovieList = favoriteMovies;
+                recyclerView.setAdapter(new FavMovieAdapter(favoriteMovieList));
+                if(favoriteMovies.size()==0){
+                    llNoRecord.setVisibility(View.VISIBLE);               }
             }
         });
 

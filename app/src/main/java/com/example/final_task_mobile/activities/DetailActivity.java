@@ -216,7 +216,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     private void addValue(DetailModel detailModel, String type) {
         favoriteTitle = detailModel.getTitle();
         favoriteImgPath = detailModel.getPoster();
-        favoriteRate = Float.valueOf(detailModel.getVoteAverage());
+        favoriteRate = detailModel.getRating();
         configureActionBar(detailModel.getTitle());
         tvTitle.setText(detailModel.getTitle());
         tvSinopsis.setText(detailModel.getOverview());

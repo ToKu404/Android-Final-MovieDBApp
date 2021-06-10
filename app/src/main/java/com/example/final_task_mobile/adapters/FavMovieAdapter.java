@@ -57,6 +57,7 @@ public class FavMovieAdapter extends RecyclerView.Adapter<FavMovieAdapter.ViewHo
             this.movie = movie;
             Glide.with(itemView.getContext()).load(Const.IMG_URL_200 + movie.getImgPath()).into(ivPoster);
             tvTitle.setText(movie.getTitle());
+
             rbFavorite.setRating(movie.getRate());
         }
 

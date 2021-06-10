@@ -32,7 +32,7 @@ public class FavoriteTvFragment extends Fragment {
     private RecyclerView recyclerView;
     private AppDatabase database;
     private LinearLayout llNoRecord;
-    private List<FavoriteTv> favoriteTvList = new ArrayList<>();
+    private List<FavoriteTv> favoriteTvList;
 
     public FavoriteTvFragment() {
     }
@@ -43,13 +43,12 @@ public class FavoriteTvFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_favorite_page, container, false);
         database = AppDatabase.getInstance(getActivity().getApplicationContext());
-        loadData();
+
         llNoRecord = view.findViewById(R.id.ll_fav_empty);
         llNoRecord.setVisibility(View.GONE);
         recyclerView = view.findViewById(R.id.rv_favorite);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        setData();
-        System.out.println("ON CREATE VIEW");
+        loadData();
         return view;
     }
 
@@ -59,25 +58,20 @@ public class FavoriteTvFragment extends Fragment {
         super.onResume();
         System.out.println("ON RESUME");
         loadData();
-        setData();
-
     }
 
-
-    private void setData() {
-//        if(favoriteMovieList.size()==0){
-        llNoRecord.setVisibility(View.VISIBLE);
-//        }else{
-        llNoRecord.setVisibility(View.GONE);
-        recyclerView.setAdapter(new FavTvAdapter(favoriteTvList));
-//        }
-    }
 
     private void loadData() {
-        database.favoriteDao().getAllTvSow().observe(getActivity(), new Observer<List<FavoriteTv>>() {
+        llNoRecord.setVisibility(View.GONE);
+        database.favoriteDao().getAllTvSow().observe(getViewLifecycleOwner(), new Observer<List<FavoriteTv>>() {
             @Override
             public void onChanged(List<FavoriteTv> favoritetvs) {
+
                 favoriteTvList = favoritetvs;
+                recyclerView.setAdapter(new FavTvAdapter(favoritetvs));
+                if(favoritetvs.size()==0){
+                    llNoRecord.setVisibility(View.VISIBLE);
+                }
             }
         });
 

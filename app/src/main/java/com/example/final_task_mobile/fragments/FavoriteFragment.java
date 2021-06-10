@@ -46,7 +46,6 @@ public class FavoriteFragment extends Fragment {
 
 
 
-
         (tabLayout.getTabAt(0)).setText("Movie");
         (tabLayout.getTabAt(1)).setText("TV Show");
 
