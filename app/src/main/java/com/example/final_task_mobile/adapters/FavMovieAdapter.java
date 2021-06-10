@@ -1,5 +1,6 @@
 package com.example.final_task_mobile.adapters;
 
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,16 +13,26 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.final_task_mobile.R;
-import com.example.final_task_mobile.db.table.FavoriteMovie;
+import com.example.final_task_mobile.activities.DetailActivity;
+import com.example.final_task_mobile.adapters.onclick.OnItemClickListener;
+import com.example.final_task_mobile.local.table.FavoriteMovie;
 import com.example.final_task_mobile.networks.Const;
+import android.content.Context;
 
 import java.util.List;
 
 public class FavMovieAdapter extends RecyclerView.Adapter<FavMovieAdapter.ViewHolder> {
+    //attribute
     private List<FavoriteMovie> movieList;
+    private OnItemClickListener clickListener;
+
+
 
     public FavMovieAdapter(List<FavoriteMovie> movieList){
         this.movieList = movieList;
+    }
+    public void setClickListener(OnItemClickListener clickListener) {
+        this.clickListener = clickListener;
     }
 
     @NonNull
@@ -34,6 +45,7 @@ public class FavMovieAdapter extends RecyclerView.Adapter<FavMovieAdapter.ViewHo
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.onBindItemView(movieList.get(position));
+
     }
 
     @Override
@@ -41,14 +53,18 @@ public class FavMovieAdapter extends RecyclerView.Adapter<FavMovieAdapter.ViewHo
         return movieList.size();
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder{
+    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+        //movie favorite object
         FavoriteMovie movie;
+
+        //attribute
         ImageView ivPoster;
         TextView tvTitle;
-       RatingBar rbFavorite;
+        RatingBar rbFavorite;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+            itemView.setOnClickListener(this);
             ivPoster = itemView.findViewById(R.id.iv_favorite);
             tvTitle = itemView.findViewById(R.id.tv_title_fav);
             rbFavorite = itemView.findViewById(R.id.rb_favorite);
@@ -61,6 +77,10 @@ public class FavMovieAdapter extends RecyclerView.Adapter<FavMovieAdapter.ViewHo
             rbFavorite.setRating(movie.getRate());
         }
 
+        @Override
+        public void onClick(View v) {
+            clickListener.onItemClick(movie);
+        }
     }
 
 }

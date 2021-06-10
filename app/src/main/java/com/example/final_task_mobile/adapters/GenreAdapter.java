@@ -1,6 +1,6 @@
 package com.example.final_task_mobile.adapters;
 
-import android.content.Context;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,12 +15,12 @@ import java.util.List;
 
 public class GenreAdapter extends RecyclerView.Adapter<GenreAdapter.ViewHolder>
 {
-    private List<String> genres;
-    private Context mContext;
+    //attribute
+    private List<String> genreList;
 
-    public GenreAdapter(List<String> genres, Context context){
-        this.genres = genres;
-       this.mContext = mContext;
+
+    public GenreAdapter(List<String> genreList){
+        this.genreList = genreList;
     }
 
     @NonNull
@@ -33,22 +33,19 @@ public class GenreAdapter extends RecyclerView.Adapter<GenreAdapter.ViewHolder>
 
     @Override
     public void onBindViewHolder(@NonNull GenreAdapter.ViewHolder holder, int position) {
-        final String genre = genres.get(position);
-
+        final String genre = genreList.get(position);
         holder.setGenre(genre);
     }
 
     @Override
     public int getItemCount() {
-        return genres == null ? 0 : genres.size();
+        return genreList == null ? 0 : genreList.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         private TextView tvGenre;
-
         public ViewHolder(View itemView){
             super(itemView);
-
             tvGenre = itemView.findViewById(R.id.tv_genre_rv);
         }
 

@@ -12,17 +12,23 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.final_task_mobile.R;
-import com.example.final_task_mobile.db.table.FavoriteTv;
-import com.example.final_task_mobile.db.table.FavoriteTv;
+import com.example.final_task_mobile.adapters.onclick.OnItemClickListener;
+import com.example.final_task_mobile.local.table.FavoriteTv;
 import com.example.final_task_mobile.networks.Const;
 
 import java.util.List;
 
 public class FavTvAdapter extends RecyclerView.Adapter<FavTvAdapter.ViewHolder> {
+    //attribute adapter
     private List<FavoriteTv> tvList;
+    private OnItemClickListener clickListener;
 
     public FavTvAdapter(List<FavoriteTv> tvList){
         this.tvList = tvList;
+    }
+
+    public void setClickListener(OnItemClickListener clickListener){
+        this.clickListener = clickListener;
     }
 
     @NonNull
@@ -42,7 +48,8 @@ public class FavTvAdapter extends RecyclerView.Adapter<FavTvAdapter.ViewHolder> 
         return tvList.size();
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder{
+    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+        //attribute holder
         FavoriteTv tv;
         ImageView ivPoster;
         TextView tvTitle;
@@ -50,17 +57,24 @@ public class FavTvAdapter extends RecyclerView.Adapter<FavTvAdapter.ViewHolder> 
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+            itemView.setOnClickListener(this);
+            //set layout
             ivPoster = itemView.findViewById(R.id.iv_favorite);
             tvTitle = itemView.findViewById(R.id.tv_title_fav);
             rbFavorite = itemView.findViewById(R.id.rb_favorite);
         }
         void onBindItemView(FavoriteTv tv) {
+            //set value
             this.tv = tv;
             Glide.with(itemView.getContext()).load(Const.IMG_URL_200 + tv.getImgPath()).into(ivPoster);
             tvTitle.setText(tv.getTitle());
             rbFavorite.setRating(tv.getRate());
         }
 
+        @Override
+        public void onClick(View v) {
+            clickListener.onItemClick(tv);
+        }
     }
 
 }

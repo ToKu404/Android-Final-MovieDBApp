@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.final_task_mobile.R;
+import com.example.final_task_mobile.adapters.onclick.OnItemClickListener;
 import com.example.final_task_mobile.models.movie.Movie;
 import com.example.final_task_mobile.networks.Const;
 
@@ -18,13 +19,14 @@ import com.example.final_task_mobile.networks.Const;
 import java.util.List;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.GridViewHolder> {
+    //attribute adapter
     private List<Movie> movieList;
-    private OnMovieItemClickListener clickListener;
+    private OnItemClickListener clickListener;
 
     public MovieAdapter(List<Movie> movieList){
         this.movieList = movieList;
     }
-    public void setClickListener(OnMovieItemClickListener clickListener) {
+    public void setClickListener(OnItemClickListener clickListener) {
         this.clickListener = clickListener;
     }
 
@@ -51,7 +53,10 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.GridViewHold
     }
 
     class GridViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        //attribute holder
         Movie movie;
+
+        //widget holder
         ImageView ivPoster;
         TextView tvTitle;
         TextView tvVoteAverage;
@@ -59,11 +64,14 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.GridViewHold
         public GridViewHolder(@NonNull View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
+
+            //set layout for widget
             ivPoster = itemView.findViewById(R.id.iv_main_card_poster);
             tvTitle = itemView.findViewById(R.id.tv_main_card_title);
             tvVoteAverage = itemView.findViewById(R.id.tv_main_card_vote);
         }
         void onBindItemView(Movie movie) {
+            //set value
             this.movie = movie;
             Glide.with(itemView.getContext()).load(Const.IMG_URL_200 + movie.getImgUrl()).into(ivPoster);
             tvTitle.setText(movie.getTitle());
