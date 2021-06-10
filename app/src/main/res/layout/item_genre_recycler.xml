@@ -6,7 +6,7 @@
     android:paddingHorizontal="5dp"
     >
     <TextView
-        android:id="@+id/tv_genre_rv"
+        android:id="@+id/tv_genre_detail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="14dp"

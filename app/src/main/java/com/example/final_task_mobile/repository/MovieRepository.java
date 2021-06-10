@@ -19,12 +19,16 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MovieRepository {
+    //attribute
     private static MovieRepository movieRepository;
     private MovieApiInterface movieService;
 
+    //container
     private MovieRepository(MovieApiInterface movieService){
         this.movieService = movieService;
     }
+
+    //instance
     public static MovieRepository getRetrofit() {
         if(movieRepository==null){
             Retrofit retrofit = new Retrofit.Builder().baseUrl(Const.BASE_URL)
@@ -34,12 +38,12 @@ public class MovieRepository {
         }
         return movieRepository;
     }
+
+    //get movie
     public void getMovie(String sortBy, int page, final OnMovieCallback callback){
         movieService.getResult(sortBy, Const.API_KEY, page).enqueue(new Callback<MovieResponse>() {
-
             @Override
             public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
-
                 if (response.isSuccessful()) {
                     if (response.body() != null) {
                         if (response.body().getMovieResult()!= null) {
@@ -54,7 +58,6 @@ public class MovieRepository {
                     callback.onFailure(response.message());
                 }
             }
-
             @Override
             public void onFailure(Call<MovieResponse> call, Throwable t) {
                 callback.onFailure(t.getLocalizedMessage());
@@ -62,6 +65,7 @@ public class MovieRepository {
         });
     }
 
+    //get movie detail
     public void getMovieDetail(int id, final OnDetailCallback callback) {
         movieService.getMovie(id, Const.API_KEY)
                 .enqueue(new Callback<DetailModel>() {
@@ -86,6 +90,7 @@ public class MovieRepository {
                 });
     }
 
+    //get movie similar
     public void getMovieSimilar(int id, final OnMovieSimilarsCallback callback){
         movieService.getSimilarMovie(id, Const.API_KEY).enqueue(new Callback<MovieSimilarResponse>() {
             @Override
@@ -101,7 +106,6 @@ public class MovieRepository {
                     callback.onFailure("null");
                 }
             }
-
             @Override
             public void onFailure(Call<MovieSimilarResponse> call, Throwable t) {
                 callback.onFailure(t.getLocalizedMessage());
@@ -109,11 +113,11 @@ public class MovieRepository {
         });
     }
 
+    //get movie cast
     public void getMovieCast(int id, final OnCastCallback callback){
         movieService.getMovieCast(id, Const.API_KEY).enqueue(new Callback<CreditModel>() {
             @Override
             public void onResponse(Call<CreditModel> call, Response<CreditModel> response) {
-
                 if (response.isSuccessful()) {
                     if (response.body() != null) {
                         callback.onSuccess(response.body(), response.message());
@@ -124,7 +128,6 @@ public class MovieRepository {
                     callback.onFailure(response.message() + ", Error Code : " + response.code());
                 }
             }
-
             @Override
             public void onFailure(Call<CreditModel> call, Throwable t) {
 
@@ -132,9 +135,8 @@ public class MovieRepository {
         });
     }
 
-
-
-    public void search(String query, int page, final OnMovieSearchCallback callback) {
+    //get search result
+    public void searchMovie(String query, int page, final OnMovieSearchCallback callback) {
         movieService.search(Const.API_KEY, query, page)
                 .enqueue(new Callback<MovieResponse>() {
                     @Override

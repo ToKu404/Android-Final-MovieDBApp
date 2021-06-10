@@ -40,8 +40,4 @@ public class Movie {
     public String getImgUrl() {
         return imgUrl;
     }
-
-    public void setImgUrl(String imgUrl) {
-        this.imgUrl = imgUrl;
-    }
 }

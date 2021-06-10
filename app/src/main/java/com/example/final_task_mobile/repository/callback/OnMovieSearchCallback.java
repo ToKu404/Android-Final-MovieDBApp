@@ -6,6 +6,5 @@ import java.util.List;
 
 public interface OnMovieSearchCallback {
     void onSuccess(List<Movie> movies, String msg, int page);
-
     void onFailure(String msg);
 }

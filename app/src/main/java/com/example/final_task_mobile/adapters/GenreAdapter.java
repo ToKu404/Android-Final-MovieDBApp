@@ -46,7 +46,7 @@ public class GenreAdapter extends RecyclerView.Adapter<GenreAdapter.ViewHolder>
         private TextView tvGenre;
         public ViewHolder(View itemView){
             super(itemView);
-            tvGenre = itemView.findViewById(R.id.tv_genre_rv);
+            tvGenre = itemView.findViewById(R.id.tv_genre_detail);
         }
 
         public void setGenre(String genre){

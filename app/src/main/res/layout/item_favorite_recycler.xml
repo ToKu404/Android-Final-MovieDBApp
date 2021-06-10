@@ -24,7 +24,7 @@
         android:id="@+id/tv_title_fav"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toEndOf="@id/cv_favorite"
+        app:layout_constraintStart_toEndOf="@id/cv_poster_fav"
         app:layout_constraintTop_toTopOf="@id/cv_back_fav"
         app:layout_constraintEnd_toEndOf="@id/cv_back_fav"
         android:text="Kong Skull"
@@ -36,8 +36,7 @@
         android:textColor="@color/white"
         android:layout_margin="11dp"/>
     <RatingBar
-        android:id="@+id/rb_favorite"
-
+        android:id="@+id/rb_rate_fav"
         style="@style/Widget.AppCompat.RatingBar.Small"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -59,7 +58,7 @@
         android:layout_marginTop="8dp"
         tools:rating="3" />
     <androidx.cardview.widget.CardView
-        android:id="@+id/cv_favorite"
+        android:id="@+id/cv_poster_fav"
         android:layout_width="70dp"
         android:layout_height="70dp"
         android:elevation="2dp"
@@ -67,14 +66,14 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent">
         <ImageView
-            android:id="@+id/iv_favorite"
+            android:id="@+id/iv_poster_fav"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:src="@drawable/sample_poster"
             android:scaleType="centerCrop"/>
     </androidx.cardview.widget.CardView>
     <androidx.cardview.widget.CardView
-        android:id="@+id/cv_fav_icon"
+        android:id="@+id/cv_icon_fav"
         android:layout_width="35dp"
         android:layout_height="25dp"
         android:elevation="2dp"

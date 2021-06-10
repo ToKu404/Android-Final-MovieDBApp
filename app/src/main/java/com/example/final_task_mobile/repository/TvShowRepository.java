@@ -19,9 +19,11 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class TvShowRepository {
+    //attribute tvshow
     private static TvShowRepository tvRepository;
     private TvShowApiInterface tvService;
 
+    //instance
     private TvShowRepository(TvShowApiInterface tvService){
         this.tvService = tvService;
     }
@@ -34,6 +36,8 @@ public class TvShowRepository {
         }
         return tvRepository;
     }
+
+    //get tvshow
     public void getTvShow(String sortBy, int page, final OnTvShowCallback callback){
         tvService.getResult(sortBy, Const.API_KEY, page).enqueue(new Callback<TvShowResponse>() {
             @Override
@@ -53,7 +57,6 @@ public class TvShowRepository {
                     callback.onFailure(response.message());
                 }
             }
-
             @Override
             public void onFailure(Call<TvShowResponse> call, Throwable t) {
                 callback.onFailure(t.getLocalizedMessage());
@@ -61,6 +64,7 @@ public class TvShowRepository {
         });
     }
 
+    //get tv show detail
     public void getTvShowDetail(int id, final OnDetailCallback callback) {
         tvService.getTvShow(id, Const.API_KEY)
                 .enqueue(new Callback<DetailModel>() {
@@ -85,6 +89,7 @@ public class TvShowRepository {
                 });
     }
 
+    //get tv show similar
     public void getTvShowSimilar(int id, final OnTvShowSimilarsCallback callback){
         tvService.getSimilarTvShow(id, Const.API_KEY).enqueue(new Callback<TvShowSimilarResponse>() {
             @Override
@@ -108,6 +113,7 @@ public class TvShowRepository {
         });
     }
 
+    //get tv show cast
     public void getTvShowCast(int id, final OnCastCallback callback){
         tvService.getTvCast(id, Const.API_KEY).enqueue(new Callback<CreditModel>() {
             @Override
@@ -131,9 +137,8 @@ public class TvShowRepository {
         });
     }
 
-
-
-    public void search(String query, int page, final OnTvShowSearchCallback callback) {
+    //search tv show
+    public void searchTvShow(String query, int page, final OnTvShowSearchCallback callback) {
         tvService.search(Const.API_KEY, query, page)
                 .enqueue(new Callback<TvShowResponse>() {
                     @Override

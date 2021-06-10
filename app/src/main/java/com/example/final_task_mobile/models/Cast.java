@@ -2,6 +2,10 @@ package com.example.final_task_mobile.models;
 
 public class Cast {
     int id;
+    String character;
+    String name;
+    String profile_path;
+
 
     public int getId() {
         return id;
@@ -23,20 +27,7 @@ public class Cast {
         return profile_path;
     }
 
-    public void setProfile_path(String profile_path) {
-        this.profile_path = profile_path;
-    }
-
-    String name;
-    String profile_path;
-
     public String getCharacter() {
         return "("+character+")";
     }
-
-    public void setCharacter(String character) {
-        this.character = character;
-    }
-
-    String character;
 }

@@ -59,9 +59,9 @@ public class FavTvAdapter extends RecyclerView.Adapter<FavTvAdapter.ViewHolder> 
             super(itemView);
             itemView.setOnClickListener(this);
             //set layout
-            ivPoster = itemView.findViewById(R.id.iv_favorite);
+            ivPoster = itemView.findViewById(R.id.iv_poster_fav);
             tvTitle = itemView.findViewById(R.id.tv_title_fav);
-            rbFavorite = itemView.findViewById(R.id.rb_favorite);
+            rbFavorite = itemView.findViewById(R.id.rb_rate_fav);
         }
         void onBindItemView(FavoriteTv tv) {
             //set value

@@ -1,4 +1,4 @@
-package com.example.final_task_mobile.db;
+package com.example.final_task_mobile.local;
 
 import androidx.room.Database;
 import androidx.room.Room;
@@ -6,9 +6,9 @@ import androidx.room.RoomDatabase;
 
 import android.content.Context;
 
-import com.example.final_task_mobile.db.dao.FavoriteDao;
-import com.example.final_task_mobile.db.table.FavoriteMovie;
-import com.example.final_task_mobile.db.table.FavoriteTv;
+import com.example.final_task_mobile.local.dao.FavoriteDao;
+import com.example.final_task_mobile.local.table.FavoriteMovie;
+import com.example.final_task_mobile.local.table.FavoriteTv;
 
 @Database(entities = {FavoriteMovie.class, FavoriteTv.class}, version = 2, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {

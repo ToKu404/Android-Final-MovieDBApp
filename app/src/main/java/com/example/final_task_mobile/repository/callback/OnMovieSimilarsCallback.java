@@ -5,8 +5,6 @@ import com.example.final_task_mobile.models.movie.Movie;
 import java.util.List;
 
 public interface OnMovieSimilarsCallback {
-
-    void onFailure(String message);
-
     void onSuccess(List<Movie> similarsMovie);
+    void onFailure(String message);
 }

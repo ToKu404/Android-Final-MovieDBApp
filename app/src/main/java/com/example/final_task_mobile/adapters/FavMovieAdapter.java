@@ -1,6 +1,5 @@
 package com.example.final_task_mobile.adapters;
 
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,11 +12,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.final_task_mobile.R;
-import com.example.final_task_mobile.activities.DetailActivity;
 import com.example.final_task_mobile.adapters.onclick.OnItemClickListener;
 import com.example.final_task_mobile.local.table.FavoriteMovie;
 import com.example.final_task_mobile.networks.Const;
-import android.content.Context;
 
 import java.util.List;
 
@@ -65,9 +62,9 @@ public class FavMovieAdapter extends RecyclerView.Adapter<FavMovieAdapter.ViewHo
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
-            ivPoster = itemView.findViewById(R.id.iv_favorite);
+            ivPoster = itemView.findViewById(R.id.iv_poster_fav);
             tvTitle = itemView.findViewById(R.id.tv_title_fav);
-            rbFavorite = itemView.findViewById(R.id.rb_favorite);
+            rbFavorite = itemView.findViewById(R.id.rb_rate_fav);
         }
         void onBindItemView(FavoriteMovie movie) {
             this.movie = movie;

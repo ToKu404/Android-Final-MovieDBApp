@@ -1,6 +1,5 @@
 package com.example.final_task_mobile.adapters;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,13 +18,10 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 public class CastAdapter extends RecyclerView.Adapter<CastAdapter.CastViewHolder> {
-
     private List<Cast> casts;
-    private Context mContext;
 
-    public CastAdapter(List<Cast> casts, Context context){
+    public CastAdapter(List<Cast> casts){
         this.casts = casts;
-        this.mContext = context;
         System.out.println(casts.size());
     }
     @NonNull

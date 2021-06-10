@@ -1,4 +1,4 @@
-package com.example.final_task_mobile.db.table;
+package com.example.final_task_mobile.local.table;
 
 
 import androidx.room.ColumnInfo;
@@ -7,8 +7,8 @@ import androidx.room.PrimaryKey;
 
 import java.io.Serializable;
 
-@Entity(tableName = "favorites_tv")
-public class FavoriteTv implements Serializable {
+@Entity(tableName = "favorites_movie")
+public class FavoriteMovie implements Serializable {
 
     public int getId() {
         return id;
@@ -33,6 +33,7 @@ public class FavoriteTv implements Serializable {
     public void setImgPath(String imgPath) {
         this.imgPath = imgPath;
     }
+
     @PrimaryKey
     private int id;
 
@@ -41,7 +42,6 @@ public class FavoriteTv implements Serializable {
 
     @ColumnInfo(name = "img_path")
     private String imgPath;
-
 
     public Float getRate() {
         return rate;
@@ -54,12 +54,9 @@ public class FavoriteTv implements Serializable {
     @ColumnInfo(name = "rate")
     private Float rate;
 
-    public FavoriteTv(){}
+    public FavoriteMovie(){}
 
-    public FavoriteTv(int id){
-        this.id = id;
-    }
-    public FavoriteTv(int id, String title, String imgPath, Float rate){
+    public FavoriteMovie(int id, String title, String imgPath, Float rate){
         this.id = id;
         this.title = title;
         this.imgPath = imgPath;

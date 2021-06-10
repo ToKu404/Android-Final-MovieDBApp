@@ -6,6 +6,10 @@ import com.example.final_task_mobile.models.Cast;
 import java.util.List;
 
 public class CreditModel {
+    private int id;
+    private List<Cast> cast;
+
+
     public int getId() {
         return id;
     }
@@ -17,11 +21,4 @@ public class CreditModel {
     public List<Cast> getCast() {
         return cast;
     }
-
-    public void setCast(List<Cast> cast) {
-        this.cast = cast;
-    }
-
-    private int id;
-    private List<Cast> cast;
 }

@@ -21,8 +21,8 @@ public class ViewPagerAdapter extends FragmentStateAdapter {
         super(fragmentActivity);
         //instance fragments2 favorite
         fragments = new Fragment[]{
-                new FavoriteMovieFragment(),
-                new FavoriteTvFragment()
+                new FavoriteTvFragment(),
+                new FavoriteMovieFragment()
         };
     }
 

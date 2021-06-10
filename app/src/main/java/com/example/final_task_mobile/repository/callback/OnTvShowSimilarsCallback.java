@@ -8,6 +8,4 @@ import java.util.List;
 public interface OnTvShowSimilarsCallback {
     void onSuccess(List<TvShow> similarsTv);
     void onFailure(String message);
-
-
 }

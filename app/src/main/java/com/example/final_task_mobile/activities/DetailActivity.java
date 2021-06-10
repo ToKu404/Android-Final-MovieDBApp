@@ -24,10 +24,11 @@ import com.example.final_task_mobile.R;
 import com.example.final_task_mobile.adapters.CastAdapter;
 import com.example.final_task_mobile.adapters.GenreAdapter;
 import com.example.final_task_mobile.adapters.MovieAdapter;
-import com.example.final_task_mobile.adapters.OnMovieItemClickListener;
-import com.example.final_task_mobile.adapters.OnTvShowItemClickListener;
+import com.example.final_task_mobile.adapters.onclick.OnItemClickListener;
 import com.example.final_task_mobile.adapters.TvShowAdapter;
-import com.example.final_task_mobile.db.RoomHelper;
+import com.example.final_task_mobile.local.RoomHelper;
+import com.example.final_task_mobile.local.table.FavoriteMovie;
+import com.example.final_task_mobile.local.table.FavoriteTv;
 import com.example.final_task_mobile.models.Cast;
 import com.example.final_task_mobile.models.Genre;
 import com.example.final_task_mobile.models.movie.Movie;
@@ -45,7 +46,7 @@ import com.example.final_task_mobile.repository.callback.OnTvShowSimilarsCallbac
 import java.util.ArrayList;
 import java.util.List;
 
-public class DetailActivity extends AppCompatActivity implements View.OnClickListener, OnMovieItemClickListener, OnTvShowItemClickListener {
+public class DetailActivity extends AppCompatActivity implements View.OnClickListener, OnItemClickListener{
     //movie
     private MovieRepository movieRepository;
     private MovieAdapter mvAdapter;
@@ -330,7 +331,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 public void onSuccess(CreditModel creditModel, String message) {
                     listCast = creditModel.getCast();
                     rvCast.setLayoutManager(new LinearLayoutManager(DetailActivity.this, RecyclerView.HORIZONTAL,false));
-                    rvCast.setAdapter(new CastAdapter(listCast, DetailActivity.this));
+                    rvCast.setAdapter(new CastAdapter(listCast));
                 }
                 @Override
                 public void onFailure(String message) {
@@ -345,7 +346,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 public void onSuccess(CreditModel creditModel, String message) {
                     listCast = creditModel.getCast();
                     rvCast.setLayoutManager(new LinearLayoutManager(DetailActivity.this, RecyclerView.HORIZONTAL,false));
-                    rvCast.setAdapter(new CastAdapter(listCast, DetailActivity.this));
+                    rvCast.setAdapter(new CastAdapter(listCast));
                 }
                 @Override
                 public void onFailure(String message) {
@@ -363,7 +364,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         }
         //recycleview genre settings
         rvGenre.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
-        rvGenre.setAdapter(new GenreAdapter(listGenre, this));
+        rvGenre.setAdapter(new GenreAdapter(listGenre));
     }
 
 
@@ -384,6 +385,12 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             tvMore.setText("less");
         }
     }
+
+    @Override
+    public void onItemClick(FavoriteMovie favoriteMovie) {}
+
+    @Override
+    public void onItemClick(FavoriteTv favoriteTv) {}
 
     @Override
     public void onItemClick(Movie movie) {

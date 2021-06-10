@@ -26,8 +26,11 @@ import android.widget.Toast;
 import com.example.final_task_mobile.R;
 import com.example.final_task_mobile.activities.DetailActivity;
 
-import com.example.final_task_mobile.adapters.OnTvShowItemClickListener;
+import com.example.final_task_mobile.adapters.onclick.OnItemClickListener;
 import com.example.final_task_mobile.adapters.TvShowAdapter;
+import com.example.final_task_mobile.local.table.FavoriteMovie;
+import com.example.final_task_mobile.local.table.FavoriteTv;
+import com.example.final_task_mobile.models.movie.Movie;
 import com.example.final_task_mobile.models.tvshow.TvShow;
 import com.example.final_task_mobile.repository.TvShowRepository;
 import com.example.final_task_mobile.repository.callback.OnTvShowCallback;
@@ -37,7 +40,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class TvShowFragment extends Fragment implements OnTvShowItemClickListener, SearchView.OnQueryTextListener, SwipeRefreshLayout.OnRefreshListener{
+public class TvShowFragment extends Fragment implements OnItemClickListener, SearchView.OnQueryTextListener, SwipeRefreshLayout.OnRefreshListener{
     //extrass
     private static final String TAG = "tv";
     private static final String SORT_BY = "popular";
@@ -192,7 +195,7 @@ public class TvShowFragment extends Fragment implements OnTvShowItemClickListene
         }
         //show tv show by query, in search
         else{
-            repository.search(query, page, new OnTvShowSearchCallback() {
+            repository.searchTvShow(query, page, new OnTvShowSearchCallback() {
                 @Override
                 public void onSuccess(List<TvShow> tvShowList, String msg, int page) {
                     //if adapter null
@@ -220,8 +223,6 @@ public class TvShowFragment extends Fragment implements OnTvShowItemClickListene
 
     }
 
-
-
     @Override
     public void onRefresh() {
         //show all tv show when refersh
@@ -230,6 +231,15 @@ public class TvShowFragment extends Fragment implements OnTvShowItemClickListene
         tvProgressBar.setVisibility(View.VISIBLE);
         loadData("", currentPage);
     }
+
+    @Override
+    public void onItemClick(FavoriteMovie favoriteMovie) {}
+
+    @Override
+    public void onItemClick(FavoriteTv favoriteTv) {}
+
+    @Override
+    public void onItemClick(Movie movie) {}
 
     @Override
     //intent to detail

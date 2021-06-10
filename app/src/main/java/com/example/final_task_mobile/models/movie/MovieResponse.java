@@ -8,10 +8,7 @@ import java.util.List;
 public class MovieResponse {
     @SerializedName("page")
     private int page;
-    @SerializedName("total_results")
-    private int totalResluts;
-    @SerializedName("total_pages")
-    private int totalPages;
+
     @SerializedName("results")
     @Expose
     private List<Movie> movieResult;
@@ -22,14 +19,6 @@ public class MovieResponse {
 
     public int getPage() {
         return page;
-    }
-
-    public int getTotalResluts() {
-        return totalResluts;
-    }
-
-    public int getTotalPages() {
-        return totalPages;
     }
 
 }

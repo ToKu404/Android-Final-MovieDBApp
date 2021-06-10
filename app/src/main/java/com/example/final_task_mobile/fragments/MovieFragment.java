@@ -26,8 +26,11 @@ import android.widget.Toast;
 import com.example.final_task_mobile.activities.DetailActivity;
 import com.example.final_task_mobile.R;
 import com.example.final_task_mobile.adapters.MovieAdapter;
-import com.example.final_task_mobile.adapters.OnMovieItemClickListener;
+import com.example.final_task_mobile.adapters.onclick.OnItemClickListener;
+import com.example.final_task_mobile.local.table.FavoriteMovie;
+import com.example.final_task_mobile.local.table.FavoriteTv;
 import com.example.final_task_mobile.models.movie.Movie;
+import com.example.final_task_mobile.models.tvshow.TvShow;
 import com.example.final_task_mobile.repository.MovieRepository;
 import com.example.final_task_mobile.repository.callback.OnMovieCallback;
 import com.example.final_task_mobile.repository.callback.OnMovieSearchCallback;
@@ -36,7 +39,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class MovieFragment extends Fragment implements OnMovieItemClickListener, SearchView.OnQueryTextListener, SwipeRefreshLayout.OnRefreshListener {
+public class MovieFragment extends Fragment implements OnItemClickListener, SearchView.OnQueryTextListener, SwipeRefreshLayout.OnRefreshListener {
     //widget
     private SwipeRefreshLayout refreshLayout;
     private ProgressBar tvProgressBar;
@@ -185,7 +188,7 @@ public class MovieFragment extends Fragment implements OnMovieItemClickListener,
         }
         //show movie like in query
         else{
-            repository.search(query, page, new OnMovieSearchCallback() {
+            repository.searchMovie(query, page, new OnMovieSearchCallback() {
                 @Override
                 public void onSuccess(List<Movie> movies, String msg, int page) {
                     //if adapter null, make new adapter
@@ -219,6 +222,7 @@ public class MovieFragment extends Fragment implements OnMovieItemClickListener,
         loadData("", currentPage);
     }
 
+
     @Override
     public void onItemClick(Movie movie) {
         //intent to detail
@@ -227,4 +231,11 @@ public class MovieFragment extends Fragment implements OnMovieItemClickListener,
         detailActivity.putExtra("TYPE", TAG);
         startActivity(detailActivity);
     }
+
+    @Override
+    public void onItemClick(FavoriteMovie favoriteMovie) {}
+    @Override
+    public void onItemClick(FavoriteTv favoriteTv) {}
+    @Override
+    public void onItemClick(TvShow tv) {}
 }
