@@ -18,7 +18,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 public class CastAdapter extends RecyclerView.Adapter<CastAdapter.CastViewHolder> {
-    private List<Cast> casts;
+    private final List<Cast> casts;
 
     public CastAdapter(List<Cast> casts){
         this.casts = casts;

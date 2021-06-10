@@ -20,7 +20,7 @@ import java.util.List;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.GridViewHolder> {
     //attribute adapter
-    private List<Movie> movieList;
+    private final List<Movie> movieList;
     private OnItemClickListener clickListener;
 
     public MovieAdapter(List<Movie> movieList){

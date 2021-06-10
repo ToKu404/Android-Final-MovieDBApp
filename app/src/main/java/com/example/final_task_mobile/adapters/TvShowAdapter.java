@@ -19,7 +19,7 @@ import java.util.List;
 
 public class TvShowAdapter extends RecyclerView.Adapter<TvShowAdapter.GridViewHolder> {
     //attribute
-    private List<TvShow> tvShowList;
+    private final List<TvShow> tvShowList;
     private OnItemClickListener clickListener;
 
 

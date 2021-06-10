@@ -21,7 +21,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class TvShowRepository {
     //attribute tvshow
     private static TvShowRepository tvRepository;
-    private TvShowApiInterface tvService;
+    private final TvShowApiInterface tvService;
 
     //instance
     private TvShowRepository(TvShowApiInterface tvService){

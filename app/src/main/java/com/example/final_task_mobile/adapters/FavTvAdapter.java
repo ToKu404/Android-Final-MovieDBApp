@@ -20,7 +20,7 @@ import java.util.List;
 
 public class FavTvAdapter extends RecyclerView.Adapter<FavTvAdapter.ViewHolder> {
     //attribute adapter
-    private List<FavoriteTv> tvList;
+    private final List<FavoriteTv> tvList;
     private OnItemClickListener clickListener;
 
     public FavTvAdapter(List<FavoriteTv> tvList){

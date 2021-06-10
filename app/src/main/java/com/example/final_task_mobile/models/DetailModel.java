@@ -62,7 +62,7 @@ public class DetailModel {
         this.id = id;
     }
     public String getEps() {
-        String episode = String.valueOf(eps)+" eps";
+        String episode = eps +" eps";
         return episode;
     }
     public String getPoster() {

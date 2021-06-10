@@ -16,7 +16,7 @@ import java.util.List;
 public class GenreAdapter extends RecyclerView.Adapter<GenreAdapter.ViewHolder>
 {
     //attribute
-    private List<String> genreList;
+    private final List<String> genreList;
 
 
     public GenreAdapter(List<String> genreList){
@@ -43,7 +43,7 @@ public class GenreAdapter extends RecyclerView.Adapter<GenreAdapter.ViewHolder>
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        private TextView tvGenre;
+        private final TextView tvGenre;
         public ViewHolder(View itemView){
             super(itemView);
             tvGenre = itemView.findViewById(R.id.tv_genre_detail);

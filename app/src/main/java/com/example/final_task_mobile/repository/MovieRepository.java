@@ -21,7 +21,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MovieRepository {
     //attribute
     private static MovieRepository movieRepository;
-    private MovieApiInterface movieService;
+    private final MovieApiInterface movieService;
 
     //container
     private MovieRepository(MovieApiInterface movieService){

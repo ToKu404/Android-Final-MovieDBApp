@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         title = title.replaceAll("\\s","");
         title += ".";
         String first = title.substring(0,title.length()/2);
-        String end = title.substring(title.length()/2,title.length());
+        String end = title.substring(title.length()/2);
         getSupportActionBar().setTitle(Html.fromHtml(first+"<font color=\"#2C83F5\">"+end+"</font>"));
     }
 

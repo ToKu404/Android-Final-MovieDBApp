@@ -20,7 +20,7 @@ import java.util.List;
 
 public class FavMovieAdapter extends RecyclerView.Adapter<FavMovieAdapter.ViewHolder> {
     //attribute
-    private List<FavoriteMovie> movieList;
+    private final List<FavoriteMovie> movieList;
     private OnItemClickListener clickListener;
 
 

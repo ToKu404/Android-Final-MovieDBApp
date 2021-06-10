@@ -11,8 +11,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.appcompat.widget.SearchView;
 
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -174,13 +172,8 @@ public class MovieFragment extends Fragment implements OnItemClickListener, Sear
                 @Override
                 public void onFailure(String message) {
                     //setting ui unsuccess
-                    Handler handler = new Handler(Looper.getMainLooper());
-                    handler.postDelayed(new Runnable() {
-                        public void run() {
-                            tvProgressBar.setVisibility(View.GONE);
-                            llNoRecord.setVisibility(View.VISIBLE);
-                        }
-                    }, 3000);
+                    tvProgressBar.setVisibility(View.GONE);
+                    llNoRecord.setVisibility(View.VISIBLE);
                     Log.d(TAG, "onFailure: " + message);
                     Toast.makeText(getActivity(), "Failed " + message, Toast.LENGTH_LONG).show();
                 }

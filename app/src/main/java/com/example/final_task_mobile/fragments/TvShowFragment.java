@@ -10,8 +10,6 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -181,13 +179,8 @@ public class TvShowFragment extends Fragment implements OnItemClickListener, Sea
                 @Override
                 public void onFailure(String message) {
                     //setting ui unsuccess
-                    Handler handler = new Handler(Looper.getMainLooper());
-                    handler.postDelayed(new Runnable() {
-                        public void run() {
-                            tvProgressBar.setVisibility(View.GONE);
-                            llNoRecord.setVisibility(View.VISIBLE);
-                        }
-                    }, 3000);
+                    tvProgressBar.setVisibility(View.GONE);
+                    llNoRecord.setVisibility(View.VISIBLE);
                     Log.d(TAG, "onFailure: " + message);
                     Toast.makeText(getActivity(), "Failed " + message, Toast.LENGTH_LONG).show();
                 }

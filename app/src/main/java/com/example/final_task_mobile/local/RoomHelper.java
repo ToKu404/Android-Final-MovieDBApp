@@ -6,7 +6,7 @@ import com.example.final_task_mobile.local.table.FavoriteTv;
 import java.util.List;
 
 public class RoomHelper {
-    private AppDatabase roomDb;
+    private final AppDatabase roomDb;
     private boolean status;
 
     public RoomHelper(Context context){

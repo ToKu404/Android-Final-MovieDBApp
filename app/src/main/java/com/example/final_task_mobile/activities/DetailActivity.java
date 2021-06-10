@@ -74,10 +74,10 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     private boolean isFavorite;
 
     //string for toast
-    private String EXTRAS_DELETE_SUCCESS = "Data Berhasil Dihapus Dari Favorite";
-    private String EXTRAS_DELETE_FAILED = "Data Gagal Dihapus Dari Favorite";
-    private String EXTRAS_INSERT_SUCCESS = "Data Berhasil Ditambahkan Ke Favorite";
-    private String EXTRAS_INSERT_FAILED = "Data Gagal Ditambahkan Ke Favorite";
+    private final String EXTRAS_DELETE_SUCCESS = "Data Berhasil Dihapus Dari Favorite";
+    private final String EXTRAS_DELETE_FAILED = "Data Gagal Dihapus Dari Favorite";
+    private final String EXTRAS_INSERT_SUCCESS = "Data Berhasil Ditambahkan Ke Favorite";
+    private final String EXTRAS_INSERT_FAILED = "Data Gagal Ditambahkan Ke Favorite";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
