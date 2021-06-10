@@ -28,6 +28,7 @@ import com.example.final_task_mobile.adapters.OnMovieItemClickListener;
 import com.example.final_task_mobile.adapters.OnTvShowItemClickListener;
 import com.example.final_task_mobile.adapters.TvShowAdapter;
 import com.example.final_task_mobile.db.AppDatabase;
+import com.example.final_task_mobile.db.RoomHelper;
 import com.example.final_task_mobile.db.table.FavoriteMovie;
 import com.example.final_task_mobile.db.table.FavoriteTv;
 import com.example.final_task_mobile.models.Cast;
@@ -60,15 +61,17 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     private ArrayList<String> genres;
     private String selectedFragment;
     private int id;
-    private String favoriteTitle, favoriteImgPath;
-    private Float favoriteRate;
+    private String favTitle, favImg;
+    private Float favRate;
     private AppDatabase roomDatabase;
-    private Boolean isFavorite = false;
+    private boolean isFavorite;
+    private RoomHelper roomHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_movie);
+        roomHelper = new RoomHelper(this);
         genres = new ArrayList<>();
         listCast = new ArrayList<>();
         ivPoster = findViewById(R.id.iv_mv_poster);
@@ -94,30 +97,56 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.action_bar_detail_activity, menu);
-        checkIsFavorite(selectedFragment, menu);
+        checkIsFavorite(menu.getItem(0));
         return super.onCreateOptionsMenu(menu);
     }
 
-    private void checkIsFavorite(String selectedFragment, Menu menu) {
+    private void checkIsFavorite(MenuItem item) {
         if(selectedFragment.equals("movie")){
-            isFavorite = roomDatabase.favoriteDao().isMovieExists(id);
+            isFavorite = roomHelper.checkFavMovie(id);
+            System.out.println("INI FAVORITE : "+isFavorite);
         }else{
-            isFavorite = roomDatabase.favoriteDao().isTvExists(id);
+            isFavorite = roomHelper.checkFavTv(id);
         }
-
         if(!isFavorite){
-            menu.getItem(0).setIcon(ContextCompat.getDrawable(this,R.drawable.ic_baseline_favorite_border_24));
+            item.setIcon(ContextCompat.getDrawable(this,R.drawable.ic_baseline_favorite_border_24));
         }else{
-            menu.getItem(0).setIcon(ContextCompat.getDrawable(this,R.drawable.ic_baseline_favorite_24));
-            menu.getItem(0).getIcon().setColorFilter(getResources().getColor(R.color.favRed), PorterDuff.Mode.SRC_ATOP);
+            item.setIcon(ContextCompat.getDrawable(this,R.drawable.ic_baseline_favorite_24));
+            item.getIcon().setColorFilter(getResources().getColor(R.color.favRed), PorterDuff.Mode.SRC_ATOP);
         }
     }
+
+    private void addToFavorite(MenuItem item){
+        String textStatus = "";
+        String hapusBerhasil = "Data Berhasil Dihapus Dari Favorite";
+        String hapusGagal = "Data Gagal Dihapus Dari Favorite";
+        String insertBerhasil = "Data Berhasil Ditambahkan Ke Favorite";
+        String insertGagal = "Data Gagal Ditambahkan Ke Favorite";
+
+        if(selectedFragment.equals("movie")){
+            if (!isFavorite) {
+                textStatus = roomHelper.insertFavMovie(id, favTitle, favImg, favRate) == true? insertBerhasil:insertGagal;
+            } else {
+                textStatus = roomHelper.deleteFavMovie(id)==true?hapusBerhasil:hapusGagal;
+            }
+        }
+        if(selectedFragment.equals("tv")){
+            if (!isFavorite) {
+                textStatus = roomHelper.insertFavTv(id, favTitle, favImg, favRate) == true? insertBerhasil:insertGagal;
+            } else {
+                textStatus = roomHelper.deleteFavTv(id)==true?hapusBerhasil:hapusGagal;
+            }
+        }
+        Toast.makeText(this, textStatus, Toast.LENGTH_SHORT).show();
+        checkIsFavorite(item);
+    }
+
 
     @Override
     protected void onStart() {
         super.onStart();
-        favoriteImgPath = "";
-        favoriteTitle = "";
+        favImg = "";
+        favTitle = "";
         if (getIntent() != null) {
             id = getIntent().getIntExtra("ID", 0);
             selectedFragment = getIntent().getStringExtra("TYPE");
@@ -134,57 +163,12 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 startActivity(mainActivity);
                 return true;
             case R.id.item_favorite:
-                addToFavorite(selectedFragment, id, item);
+                addToFavorite(item);
                 return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void addToFavorite(String type, int id, MenuItem itemFav) {
-        int dataId = id;
-        if(type.equals("movie")){
-            boolean isFavorite = roomDatabase.favoriteDao().isMovieExists(dataId);
-            if(isFavorite){
-                FavoriteMovie favoriteMovie = roomDatabase.favoriteDao().findByMovieId(dataId);
-                roomDatabase.favoriteDao().deleteFavoriteMovie(favoriteMovie).subscribe(()->{
-                    itemFav.setIcon(R.drawable.ic_baseline_favorite_border_24);
-                    Toast.makeText(this, "Remove From Favorit", Toast.LENGTH_SHORT).show();
-                },throwable->{
-                    Toast.makeText(this, "Operation Failed", Toast.LENGTH_SHORT).show();
-                });
-            }else{
-                FavoriteMovie favoriteMovie = new FavoriteMovie(dataId, favoriteTitle, favoriteImgPath,favoriteRate);
-                roomDatabase.favoriteDao().addFavoriteMovie(favoriteMovie).subscribe(()->{
-                    itemFav.setIcon(R.drawable.ic_baseline_favorite_24);
-                    itemFav.getIcon().setColorFilter(getResources().getColor(R.color.favRed), PorterDuff.Mode.SRC_ATOP);
-                    Toast.makeText(this, "Add to Favorite", Toast.LENGTH_SHORT).show();
-                },throwable->{
-                    Toast.makeText(this, "Failed to add", Toast.LENGTH_SHORT).show();
-                });
-            }
-        }else {
-            boolean isFavorite = roomDatabase.favoriteDao().isTvExists(dataId);
-            if(isFavorite){
-                FavoriteTv favoriteTv = roomDatabase.favoriteDao().findByTvId(dataId);
-                roomDatabase.favoriteDao().deleteFavoriteTv(favoriteTv).subscribe(()->{
-                    itemFav.setIcon(R.drawable.ic_baseline_favorite_border_24);
-                    Toast.makeText(this, "Remove From Favorit", Toast.LENGTH_SHORT).show();
-                },throwable->{
-                    Toast.makeText(this, "Operation Failed", Toast.LENGTH_SHORT).show();
-                });
-            }else{
-                FavoriteTv favoriteTv = new FavoriteTv(dataId, favoriteTitle, favoriteImgPath, favoriteRate);
-                roomDatabase.favoriteDao().addFavoriteTvShow(favoriteTv).subscribe(()->{
-                    itemFav.setIcon(R.drawable.ic_baseline_favorite_24);
-                    itemFav.getIcon().setColorFilter(getResources().getColor(R.color.favRed), PorterDuff.Mode.SRC_ATOP);
-                    Toast.makeText(this, "Add to Favorite", Toast.LENGTH_SHORT).show();
-                },throwable->{
-                    Toast.makeText(this, "Failed to add", Toast.LENGTH_SHORT).show();
-                });
-            }
-        }
-
-    }
 
     private void loadData(int id, String type) {
         if(type.equals("movie")){
@@ -214,9 +198,10 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void addValue(DetailModel detailModel, String type) {
-        favoriteTitle = detailModel.getTitle();
-        favoriteImgPath = detailModel.getPoster();
-        favoriteRate = detailModel.getRating();
+
+        favTitle = detailModel.getTitle();
+        favImg = detailModel.getPoster();
+        favRate = detailModel.getRating();
         configureActionBar(detailModel.getTitle());
         tvTitle.setText(detailModel.getTitle());
         tvSinopsis.setText(detailModel.getOverview());
