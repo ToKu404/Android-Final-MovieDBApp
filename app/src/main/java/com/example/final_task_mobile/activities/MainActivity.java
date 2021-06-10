@@ -34,8 +34,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         actionBarSetColor();
     }
 
-
-
     //on navigation selected
     @Override
     public boolean onNavigationItemSelected(@NonNull @org.jetbrains.annotations.NotNull MenuItem item) {

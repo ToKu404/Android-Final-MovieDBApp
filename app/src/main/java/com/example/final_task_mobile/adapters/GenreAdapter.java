@@ -11,14 +11,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.final_task_mobile.R;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class GenreAdapter extends RecyclerView.Adapter<GenreAdapter.ViewHolder>
 {
-    private ArrayList<String> genres;
+    private List<String> genres;
     private Context mContext;
 
-    public GenreAdapter(ArrayList<String> genres, Context context){
+    public GenreAdapter(List<String> genres, Context context){
         this.genres = genres;
        this.mContext = mContext;
     }

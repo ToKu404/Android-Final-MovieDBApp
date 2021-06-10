@@ -27,10 +27,7 @@ import com.example.final_task_mobile.adapters.MovieAdapter;
 import com.example.final_task_mobile.adapters.OnMovieItemClickListener;
 import com.example.final_task_mobile.adapters.OnTvShowItemClickListener;
 import com.example.final_task_mobile.adapters.TvShowAdapter;
-import com.example.final_task_mobile.db.AppDatabase;
 import com.example.final_task_mobile.db.RoomHelper;
-import com.example.final_task_mobile.db.table.FavoriteMovie;
-import com.example.final_task_mobile.db.table.FavoriteTv;
 import com.example.final_task_mobile.models.Cast;
 import com.example.final_task_mobile.models.Genre;
 import com.example.final_task_mobile.models.movie.Movie;
@@ -49,31 +46,49 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DetailActivity extends AppCompatActivity implements View.OnClickListener, OnMovieItemClickListener, OnTvShowItemClickListener {
+    //movie
     private MovieRepository movieRepository;
-    private TvShowRepository tvShowRepository;
     private MovieAdapter mvAdapter;
+
+    //tv show
+    private TvShowRepository tvShowRepository;
     private TvShowAdapter tvAdapter;
-    private List<Cast> listCast;
+
+    //widget
     private ImageView ivPoster, ivBackdrop;
     private TextView tvTitle, tvYear, tvDuration, tvSinopsis, tvRating, tvMore, tvHeaderSimilar;
     private RatingBar ratingBar;
     private RecyclerView rvGenre, rvCast, rvSimilar;
-    private ArrayList<String> genres;
-    private String selectedFragment;
-    private int id;
+
+    //attribut
+    private int EXTRAS_ID;
+    private String EXTRAS_TYPE;
+    private List<String> listGenre;
+    private List<Cast> listCast;
+
+    //local db attribut
+    private RoomHelper roomHelper;
     private String favTitle, favImg;
     private Float favRate;
-    private AppDatabase roomDatabase;
     private boolean isFavorite;
-    private RoomHelper roomHelper;
+
+    //string for toast
+    private String EXTRAS_DELETE_SUCCESS = "Data Berhasil Dihapus Dari Favorite";
+    private String EXTRAS_DELETE_FAILED = "Data Gagal Dihapus Dari Favorite";
+    private String EXTRAS_INSERT_SUCCESS = "Data Berhasil Ditambahkan Ke Favorite";
+    private String EXTRAS_INSERT_FAILED = "Data Gagal Ditambahkan Ke Favorite";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_detail_movie);
-        roomHelper = new RoomHelper(this);
-        genres = new ArrayList<>();
-        listCast = new ArrayList<>();
+        setContentView(R.layout.activity_detail_page);
+
+        //get data id from extras
+        if (getIntent() != null) {
+            EXTRAS_ID = getIntent().getIntExtra("ID", 0);
+        }
+
+        //set widget layout
         ivPoster = findViewById(R.id.iv_mv_poster);
         ivBackdrop = findViewById(R.id.iv_mv_backdrop);
         tvTitle = findViewById(R.id.tv_detail_title);
@@ -87,27 +102,43 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         rvGenre = findViewById(R.id.rv_genre);
         rvCast = findViewById(R.id.rv_cast);
         rvSimilar = findViewById(R.id.rv_similar_movie);
-        if (getIntent() != null) {
-            id = getIntent().getIntExtra("ID", 0);
-        }
-        roomDatabase = AppDatabase.getInstance(getApplicationContext());
+
+        //local db instance
+        roomHelper = new RoomHelper(this);
+        listGenre = new ArrayList<>();
+        listCast = new ArrayList<>();
+
+        //repository retrofit instance
         movieRepository = MovieRepository.getRetrofit();
         tvShowRepository = TvShowRepository.getRetrofit();
+
+        //load data and set extras data
+        if (getIntent() != null) {
+            EXTRAS_ID = getIntent().getIntExtra("ID", 0);
+            EXTRAS_TYPE = getIntent().getStringExtra("TYPE");
+            loadData();
+        }
     }
+
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        //inizialisation of favorite item
         getMenuInflater().inflate(R.menu.action_bar_detail_activity, menu);
-        checkIsFavorite(menu.getItem(0));
+        updateFavoriteItem(menu.getItem(0));
         return super.onCreateOptionsMenu(menu);
     }
 
-    private void checkIsFavorite(MenuItem item) {
-        if(selectedFragment.equals("movie")){
-            isFavorite = roomHelper.checkFavMovie(id);
-            System.out.println("INI FAVORITE : "+isFavorite);
+
+    private void updateFavoriteItem(MenuItem item) {
+        //check what is favorite item
+        if(EXTRAS_TYPE.equals("movie")){
+            isFavorite = roomHelper.checkFavMovie(EXTRAS_ID);
         }else{
-            isFavorite = roomHelper.checkFavTv(id);
+            isFavorite = roomHelper.checkFavTv(EXTRAS_ID);
         }
+
+        //icon setting if and not afavorite item
         if(!isFavorite){
             item.setIcon(ContextCompat.getDrawable(this,R.drawable.ic_baseline_favorite_border_24));
         }else{
@@ -116,73 +147,71 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
-    private void addToFavorite(MenuItem item){
+
+    private void onClickFavoriteItem(MenuItem item){
         String textStatus = "";
-        String hapusBerhasil = "Data Berhasil Dihapus Dari Favorite";
-        String hapusGagal = "Data Gagal Dihapus Dari Favorite";
-        String insertBerhasil = "Data Berhasil Ditambahkan Ke Favorite";
-        String insertGagal = "Data Gagal Ditambahkan Ke Favorite";
 
-        if(selectedFragment.equals("movie")){
+        //Movie onclick favorite action
+        if(EXTRAS_TYPE.equals("movie")){
             if (!isFavorite) {
-                textStatus = roomHelper.insertFavMovie(id, favTitle, favImg, favRate) == true? insertBerhasil:insertGagal;
+                textStatus = roomHelper.insertFavMovie(EXTRAS_ID, favTitle, favImg, favRate) == true? EXTRAS_INSERT_SUCCESS:EXTRAS_INSERT_FAILED;
             } else {
-                textStatus = roomHelper.deleteFavMovie(id)==true?hapusBerhasil:hapusGagal;
+                textStatus = roomHelper.deleteFavMovie(EXTRAS_ID)==true?EXTRAS_DELETE_SUCCESS:EXTRAS_DELETE_FAILED;
             }
         }
-        if(selectedFragment.equals("tv")){
+
+        //Tv show onclick favorite action
+        if(EXTRAS_TYPE.equals("tv")){
             if (!isFavorite) {
-                textStatus = roomHelper.insertFavTv(id, favTitle, favImg, favRate) == true? insertBerhasil:insertGagal;
+                textStatus = roomHelper.insertFavTv(EXTRAS_ID, favTitle, favImg, favRate) == true? EXTRAS_INSERT_SUCCESS:EXTRAS_INSERT_FAILED;
             } else {
-                textStatus = roomHelper.deleteFavTv(id)==true?hapusBerhasil:hapusGagal;
+                textStatus = roomHelper.deleteFavTv(EXTRAS_ID)==true?EXTRAS_DELETE_SUCCESS:EXTRAS_DELETE_FAILED;
             }
         }
+        //make toast status
         Toast.makeText(this, textStatus, Toast.LENGTH_SHORT).show();
-        checkIsFavorite(item);
+
+        //update favorite icon
+        updateFavoriteItem(item);
     }
 
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        favImg = "";
-        favTitle = "";
-        if (getIntent() != null) {
-            id = getIntent().getIntExtra("ID", 0);
-            selectedFragment = getIntent().getStringExtra("TYPE");
-            loadData(id, selectedFragment);
-        }
-
-    }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        //click favorite item
         switch (item.getItemId()) {
             case R.id.item_favorite:
-                addToFavorite(item);
+                onClickFavoriteItem(item);
                 return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
 
-    private void loadData(int id, String type) {
-        if(type.equals("movie")){
-            movieRepository.getMovieDetail(id, new OnDetailCallback() {
+    private void loadData() {
+        //movie load data
+        if(EXTRAS_TYPE.equals("movie")){
+            movieRepository.getMovieDetail(EXTRAS_ID, new OnDetailCallback() {
                 @Override
                 public void onSuccess(DetailModel movie, String message) {
-                    addValue(movie, type);
+                    //add movie value on success
+                    addValue(movie);
                 }
                 @Override
                 public void onFailure(String message) {
 
                 }
             });
-        }else if(type.equals("tv")){
-            tvShowRepository.getTvShowDetail(id, new OnDetailCallback() {
+        }
+
+        //tv load data
+        else if(EXTRAS_TYPE.equals("tv")){
+            tvShowRepository.getTvShowDetail(EXTRAS_ID, new OnDetailCallback() {
                 @Override
                 public void onSuccess(DetailModel tv, String message) {
-                    addValue(tv, type);
+                    //add tv value on success
+                    addValue(tv);
                 }
                 @Override
                 public void onFailure(String message) {
@@ -193,12 +222,35 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
     }
 
-    private void addValue(DetailModel detailModel, String type) {
+    private void addValue(DetailModel detailModel) {
+        //setting actionbar
+        configureActionBar(detailModel.getTitle());
 
+        //setting widget value
+        configureWidgetValue(detailModel);
+
+        //setting favorite attribut value
+        configureFavoriteValue(detailModel);
+
+        //setting genre value
+        configureGenreValue(detailModel.getGenres());
+
+        //setting cast value
+        configureCastValue();
+
+        //setting similar movie value
+        configureSimilarValue();
+    }
+
+    private void configureFavoriteValue(DetailModel detailModel) {
+        // add value for favorite attribut
         favTitle = detailModel.getTitle();
         favImg = detailModel.getPoster();
         favRate = detailModel.getRating();
-        configureActionBar(detailModel.getTitle());
+    }
+
+    private void configureWidgetValue(DetailModel detailModel) {
+        // add value for widget
         tvTitle.setText(detailModel.getTitle());
         tvSinopsis.setText(detailModel.getOverview());
         Glide.with(DetailActivity.this).load(Const.IMG_URL_300+ detailModel.getPoster()).into(ivPoster);
@@ -207,24 +259,18 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         tvRating.setText(detailModel.getVoteAverage());
         tvSinopsis.setOnClickListener(this);
         tvMore.setOnClickListener(this);
-        setGenres(detailModel.getGenres());
-        rvGenre.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
-        rvGenre.setAdapter(new GenreAdapter(genres, this));
-
-        if(type.equals("movie")){
+        if(EXTRAS_TYPE.equals("movie")){
             tvYear.setText(detailModel.getYear());
             tvDuration.setText(detailModel.getDuration());
         }
-        if(type.equals("tv")){
+        if(EXTRAS_TYPE.equals("tv")){
             tvYear.setText(detailModel.getEps());
             tvDuration.setText(detailModel.getStatus());
         }
-
-        loadCastData(id, type);
-        loadSimilarData(id, type);
     }
 
     private void configureActionBar(String title) {
+        //setting action bar
         if(getSupportActionBar()!=null){
             getSupportActionBar().setTitle(title);
             ColorDrawable colorDrawable = new ColorDrawable(Color.parseColor("#1A212F"));
@@ -233,9 +279,10 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
-    private void loadSimilarData(int id, String type) {
-        if(type.equals("movie")) {
-            movieRepository.getMovieSimilar(id, new OnMovieSimilarsCallback() {
+    private void configureSimilarValue() {
+        //check similar movie and show it
+        if(EXTRAS_TYPE.equals("movie")) {
+            movieRepository.getMovieSimilar(EXTRAS_ID, new OnMovieSimilarsCallback() {
                 @Override
                 public void onFailure(String message) {
                 }
@@ -252,8 +299,10 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                     rvSimilar.setAdapter(mvAdapter);
                 }
             });
-        }else if(type.equals("tv")){
-            tvShowRepository.getTvShowSimilar(id, new OnTvShowSimilarsCallback() {
+        }
+        //check similar tv shoe and show it
+        else if(EXTRAS_TYPE.equals("tv")){
+            tvShowRepository.getTvShowSimilar(EXTRAS_ID, new OnTvShowSimilarsCallback() {
                 @Override
                 public void onFailure(String message) {
                 }
@@ -273,9 +322,10 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
-    private void loadCastData(int id, String type) {
-        if(type.equals("movie")){
-            movieRepository.getMovieCast(id, new OnCastCallback() {
+    private void configureCastValue() {
+        //check movie cast and show it
+        if(EXTRAS_TYPE.equals("movie")){
+            movieRepository.getMovieCast(EXTRAS_ID, new OnCastCallback() {
                 @Override
                 public void onSuccess(CreditModel creditModel, String message) {
                     listCast = creditModel.getCast();
@@ -287,8 +337,10 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
                 }
             });
-        }else if(type.equals("tv")){
-            tvShowRepository.getTvShowCast(id, new OnCastCallback() {
+        }
+        //check tv cast and show it
+        else if(EXTRAS_TYPE.equals("tv")){
+            tvShowRepository.getTvShowCast(EXTRAS_ID, new OnCastCallback() {
                 @Override
                 public void onSuccess(CreditModel creditModel, String message) {
                     listCast = creditModel.getCast();
@@ -304,19 +356,26 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
     }
 
+    private void configureGenreValue(List<Genre> genresList){
+        //add all genre name, to list
+        for(int i = 0; i< genresList.size(); i++){
+            listGenre.add(genresList.get(i).getName());
+        }
+        //recycleview genre settings
+        rvGenre.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
+        rvGenre.setAdapter(new GenreAdapter(listGenre, this));
+    }
+
+
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
-            case R.id.tv_detail_synopsis:
-                actionExpand();
-                break;
-           case  R.id.tv_detail_more:
-                actionExpand();
-                break;
+        if(v.getId()==R.id.tv_detail_synopsis || v.getId()==R.id.tv_detail_more){
+            actionExpand();
         }
     }
 
     private void actionExpand() {
+        //code for expand and hide synopsis by manipulate maxlines
         if (tvMore.getText().toString().equalsIgnoreCase("less")){
             tvSinopsis.setMaxLines(2);
             tvMore.setText("more");
@@ -325,26 +384,23 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             tvMore.setText("less");
         }
     }
-    private void setGenres(List<Genre> genresList){
-        for(int i = 0; i< genresList.size(); i++){
-            genres.add(genresList.get(i).getName());
-        }
-    }
 
     @Override
     public void onItemClick(Movie movie) {
+        //intent to movie
         Intent detailActivity = new Intent(this, DetailActivity.class);
         detailActivity.putExtra("ID", movie.getId());
-        detailActivity.putExtra("TYPE", selectedFragment);
+        detailActivity.putExtra("TYPE", EXTRAS_TYPE);
         startActivity(detailActivity);
         finish();
     }
 
     @Override
     public void onItemClick(TvShow tvShow) {
+        //intent to tvshow
         Intent detailActivity = new Intent(this, DetailActivity.class);
         detailActivity.putExtra("ID", tvShow.getId());
-        detailActivity.putExtra("TYPE", selectedFragment);
+        detailActivity.putExtra("TYPE", EXTRAS_TYPE);
         startActivity(detailActivity);
         finish();
     }
@@ -354,4 +410,5 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         onBackPressed();
         return true;
     }
+
 }
