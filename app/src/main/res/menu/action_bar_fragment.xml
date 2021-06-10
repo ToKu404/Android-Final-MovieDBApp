@@ -7,8 +7,7 @@
         android:icon="@drawable/ic_baseline_search_24"
         android:iconTint="@color/mainGray"
         android:title="@string/search"
-
-        app:actionViewClass="android.widget.SearchView"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
         app:showAsAction="ifRoom|collapseActionView" />
 
 </menu>

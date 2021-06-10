@@ -25,7 +25,7 @@ import android.view.inputmethod.InputMethod;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.SearchView;
+import androidx.appcompat.widget.SearchView;
 import android.widget.Toast;
 
 import com.example.final_task_mobile.R;
@@ -43,14 +43,21 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 public class TvShowFragment extends Fragment implements OnTvShowItemClickListener, SearchView.OnQueryTextListener, SwipeRefreshLayout.OnRefreshListener{
+    //extrass
     private static final String TAG = "tv";
     private static final String SORT_BY = "popular";
+
+    //tv show attribut
     private RecyclerView recyclerView;
     private TvShowAdapter adapter;
+    private TvShowRepository repository;
+
+    //widget
     private SwipeRefreshLayout refreshLayout;
     private ProgressBar tvProgressBar;
     private LinearLayout llNoRecord;
-    private TvShowRepository repository;
+
+    //attribut
     private int currentPage = 1;
     private boolean isFetching;
 
@@ -59,20 +66,20 @@ public class TvShowFragment extends Fragment implements OnTvShowItemClickListene
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_tv_show, container, false);
+
+        //set layout for widget
         refreshLayout = v.findViewById(R.id.swl_tv_show);
         recyclerView = v.findViewById(R.id.rv_tv_show);
         tvProgressBar = v.findViewById(R.id.pb_tv_show);
         llNoRecord = v.findViewById(R.id.ll_tv_show_empty);
-        repository = TvShowRepository.getRetrofit();
-        loadData("", currentPage);
-        onScrollListener();
-        refreshLayout.setOnRefreshListener(this);
-        return v;
-    }
 
-    private void onScrollListener() {
+        //db instance
+        repository = TvShowRepository.getRetrofit();
+
+        //recycleview setting
         final GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 3);
         recyclerView.setLayoutManager(layoutManager);
+        //check onscroll and load new page
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
@@ -90,7 +97,15 @@ public class TvShowFragment extends Fragment implements OnTvShowItemClickListene
                 }
             }
         });
+
+        //refresh layout instance
+        refreshLayout.setOnRefreshListener(this);
+
+        //load all tvshow data
+        loadData("", currentPage);
+        return v;
     }
+
 
     @Override
     public void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
@@ -100,36 +115,21 @@ public class TvShowFragment extends Fragment implements OnTvShowItemClickListene
 
     @Override
     public void onPrepareOptionsMenu(@NonNull @NotNull Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+
+        //set layout and clean old value
         menu.clear();
         getActivity().getMenuInflater().inflate(R.menu.action_bar_fragment, menu);
         MenuItem item = menu.findItem(R.id.item_search);
 
-        SearchView searchView = null;
-        if(item!=null){
-            searchView = (SearchView) item.getActionView();
-        }
-        if(searchView!=null){
-            searchView.setIconifiedByDefault(false);
-            searchView.requestFocus();
-            searchView.setFocusable(true);
-            searchView.setIconified(false);
-            searchView.setQueryHint(getString(R.string.hint));
-            searchView.setOnQueryTextListener(this);
-            searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
-                @Override
-                public void onFocusChange(View v, boolean hasFocus) {
-                    if(hasFocus){
-                        InputMethodManager im = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                        if(im!=null){
-                            im.showSoftInput(v.findFocus(), 0);
-                        }
-                    }
-                }
-            });
-
-        }
-        super.onPrepareOptionsMenu(menu);
+        //searchview setting
+        SearchView searchView = (SearchView) item.getActionView();
+        searchView.requestFocus();
+        searchView.setQueryHint("Cari TvShow");
+        searchView.setOnQueryTextListener(this);
     }
+
+
     @Override
     public boolean onQueryTextSubmit(String query) {
         return false;
@@ -137,11 +137,14 @@ public class TvShowFragment extends Fragment implements OnTvShowItemClickListene
 
     @Override
     public boolean onQueryTextChange(String newText) {
+        //load data by query
         if (newText.length() > 0) {
             adapter = null;
             tvProgressBar.setVisibility(View.VISIBLE);
             loadData(newText, currentPage);
-        } else {
+        }
+        //load all data
+        else {
             adapter = null;
             tvProgressBar.setVisibility(View.VISIBLE);
             loadData("", currentPage);
@@ -151,10 +154,13 @@ public class TvShowFragment extends Fragment implements OnTvShowItemClickListene
 
     private void loadData(String query, int page) {
         isFetching = true;
+
+        //show all tv show data
         if(query.equals("")){
             repository.getTvShow(SORT_BY, page, new OnTvShowCallback() {
                 @Override
                 public void onSuccess(int page, List<TvShow> tvShowList) {
+                    //make new adapter if adapter null
                     if(adapter == null){
                         adapter = new TvShowAdapter(tvShowList);
                         adapter.setClickListener(TvShowFragment.this);
@@ -162,18 +168,21 @@ public class TvShowFragment extends Fragment implements OnTvShowItemClickListene
                         recyclerView.setAdapter(adapter);
                         llNoRecord.setVisibility(View.GONE);
                     }
+                    //append to list, if adapter not null
                     else{
                         adapter.appendList(tvShowList);
                     }
+
+                    //setting ui success load
                     tvProgressBar.setVisibility(View.GONE);
                     currentPage = page;
                     isFetching = false;
                     refreshLayout.setRefreshing(false);
-
                 }
 
                 @Override
                 public void onFailure(String message) {
+                    //setting ui unsuccess
                     Handler handler = new Handler(Looper.getMainLooper());
                     handler.postDelayed(new Runnable() {
                         public void run() {
@@ -185,11 +194,13 @@ public class TvShowFragment extends Fragment implements OnTvShowItemClickListene
                     Toast.makeText(getActivity(), "Failed " + message, Toast.LENGTH_LONG).show();
                 }
             });
-        }else{
+        }
+        //show tv show by query, in search
+        else{
             repository.search(query, page, new OnTvShowSearchCallback() {
                 @Override
                 public void onSuccess(List<TvShow> tvShowList, String msg, int page) {
-
+                    //if adapter null
                     if(adapter == null){
                         adapter = new TvShowAdapter(tvShowList);
                         adapter.setClickListener(TvShowFragment.this);
@@ -197,12 +208,13 @@ public class TvShowFragment extends Fragment implements OnTvShowItemClickListene
                         recyclerView.setAdapter(adapter);
                         llNoRecord.setVisibility(View.GONE);
                     }else{
+                        //if adapter hasbean created, append mtv list
                         adapter.appendList(tvShowList);
                     }
+                    //success ui setting
                     currentPage = page;
                     isFetching = false;
                     refreshLayout.setRefreshing(false);
-
                 }
                 @Override
                 public void onFailure(String msg) {
@@ -215,17 +227,17 @@ public class TvShowFragment extends Fragment implements OnTvShowItemClickListene
 
 
 
-
     @Override
     public void onRefresh() {
+        //show all tv show when refersh
         adapter = null;
         currentPage =1;
-
         tvProgressBar.setVisibility(View.VISIBLE);
         loadData("", currentPage);
     }
 
     @Override
+    //intent to detail
     public void onItemClick(TvShow tvShow) {
         Intent detailActivity = new Intent(getActivity(), DetailActivity.class);
         detailActivity.putExtra("ID", tvShow.getId());
