@@ -69,7 +69,7 @@ public class FavoriteMovieFragment extends Fragment implements OnItemClickListen
         //load data from local repositoru
         favoriteMovieList = roomHelper.readFavMovie();
 
-        //set addapter
+        //set adapter
         favMovieAdapter = new FavMovieAdapter(favoriteMovieList);
         favMovieAdapter.setClickListener(this);
         recyclerView.setAdapter(favMovieAdapter);
