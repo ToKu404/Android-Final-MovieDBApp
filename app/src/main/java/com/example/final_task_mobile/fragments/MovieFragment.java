@@ -17,7 +17,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -35,6 +37,7 @@ import com.example.final_task_mobile.repository.callback.OnMovieSearchCallback;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MovieFragment extends Fragment implements OnItemClickListener, SearchView.OnQueryTextListener, SwipeRefreshLayout.OnRefreshListener {
@@ -45,7 +48,7 @@ public class MovieFragment extends Fragment implements OnItemClickListener, Sear
 
     //extras
     private static final String TAG = "movie";
-    private static final String SORT_BY = "popular";
+    private static final String[] SORT_BY_LIST = {"now_playing","popular","top_rated","upcoming"};
 
     //movie attribut
     private RecyclerView recyclerView;
@@ -55,6 +58,7 @@ public class MovieFragment extends Fragment implements OnItemClickListener, Sear
     //variable
     private int currentPage = 1;
     private boolean isFetching;
+    private String sortBy;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -67,8 +71,12 @@ public class MovieFragment extends Fragment implements OnItemClickListener, Sear
         tvProgressBar = v.findViewById(R.id.pb_movie);
         llNoRecord = v.findViewById(R.id.ll_movie_empty);
 
+
         //db instance
         repository = MovieRepository.getRetrofit();
+
+        //set sort by
+        setSortBy(SORT_BY_LIST[1]);
 
         //recycleview setting
         final GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 3);
@@ -94,10 +102,16 @@ public class MovieFragment extends Fragment implements OnItemClickListener, Sear
         //refreshlayout
         refreshLayout.setOnRefreshListener(this);
 
+
         //load all movie
         loadData("", currentPage);
         return v;
     }
+
+    private void setSortBy(String sortBy) {
+        this.sortBy = sortBy;
+    }
+
 
     @Override
     public void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
@@ -106,12 +120,51 @@ public class MovieFragment extends Fragment implements OnItemClickListener, Sear
     }
 
     @Override
+    public boolean onOptionsItemSelected(@NonNull @NotNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.tv_now_playing:
+                setSortBy(SORT_BY_LIST[0]);
+                break;
+            case R.id.tv_popular:
+                setSortBy(SORT_BY_LIST[1]);
+                break;
+            case R.id.tv_top_rated:
+                setSortBy(SORT_BY_LIST[2]);
+                break;
+            case R.id.tv_upcoming:
+                setSortBy(SORT_BY_LIST[3]);
+                break;
+        }
+        adapter = null;
+        currentPage = 1;
+        tvProgressBar.setVisibility(View.VISIBLE);
+        loadData("", currentPage);
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void onPrepareOptionsMenu(@NonNull @NotNull Menu menu) {
         super.onPrepareOptionsMenu(menu);
         //set layout and clean it value
         menu.clear();
-        getActivity().getMenuInflater().inflate(R.menu.action_bar_fragment, menu);
+        getActivity().getMenuInflater().inflate(R.menu.action_bar_movie_fragment, menu);
         MenuItem item = menu.findItem(R.id.item_search);
+
+        //set detected on searchview expand and collaps
+        item.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem item) {
+                menu.getItem(0).setEnabled(false);
+                return true;
+            }
+
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem item) {
+                menu.getItem(0).setEnabled(true);
+                return true;
+            }
+        });
 
         // searchview setting
         SearchView searchView = (SearchView) item.getActionView();
@@ -147,7 +200,7 @@ public class MovieFragment extends Fragment implements OnItemClickListener, Sear
         //show all movie data
         if(query.equals("")){
             //getmovie request to moviedb
-            repository.getMovie(SORT_BY, page, new OnMovieCallback() {
+            repository.getMovie(sortBy, page, new OnMovieCallback() {
                 @Override
                 public void onSuccess(int page, List<Movie> movieList) {
                     //if adapter actualy null
