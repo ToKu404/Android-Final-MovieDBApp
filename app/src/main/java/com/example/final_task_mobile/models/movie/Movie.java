@@ -12,6 +12,9 @@ public class Movie {
     @SerializedName("vote_average")
     private String voteAverage;
 
+    @SerializedName("release_date")
+    private String releaseDate;
+
     public String getVoteAverage() {
         return voteAverage;
     }
@@ -39,5 +42,10 @@ public class Movie {
 
     public String getImgUrl() {
         return imgUrl;
+    }
+
+    public String getYear() {
+        String[] relaseYear = releaseDate.split("-");
+        return relaseYear[0];
     }
 }

@@ -12,6 +12,9 @@ public class TvShow {
     @SerializedName("vote_average")
     private String voteAverage;
 
+    @SerializedName("first_air_date")
+    private String releaseDate;
+
     public String getVoteAverage() {
         return voteAverage;
     }
@@ -43,5 +46,10 @@ public class TvShow {
 
     public void setImgUrl(String imgUrl) {
         this.imgUrl = imgUrl;
+    }
+
+    public String getReleaseYear() {
+        String[] releaseYear = releaseDate.split("-");
+        return releaseYear[0];
     }
 }

@@ -60,6 +60,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.GridViewHold
         ImageView ivPoster;
         TextView tvTitle;
         TextView tvVoteAverage;
+        TextView tvYear;
 
         public GridViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -69,6 +70,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.GridViewHold
             ivPoster = itemView.findViewById(R.id.iv_main_card_poster);
             tvTitle = itemView.findViewById(R.id.tv_main_card_title);
             tvVoteAverage = itemView.findViewById(R.id.tv_main_card_vote);
+            tvYear = itemView.findViewById(R.id.tv_main_card_year);
         }
         void onBindItemView(Movie movie) {
             //set value
@@ -76,6 +78,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.GridViewHold
             Glide.with(itemView.getContext()).load(Const.IMG_URL_200 + movie.getImgUrl()).into(ivPoster);
             tvTitle.setText(movie.getTitle());
             tvVoteAverage.setText(movie.getVoteAverage());
+            tvYear.setText(movie.getYear());
         }
 
         @Override

@@ -57,6 +57,7 @@ public class TvShowAdapter extends RecyclerView.Adapter<TvShowAdapter.GridViewHo
         ImageView ivPoster;
         TextView tvTitle;
         TextView tvVoteAverage;
+        TextView tvYear;
 
         public GridViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -65,6 +66,7 @@ public class TvShowAdapter extends RecyclerView.Adapter<TvShowAdapter.GridViewHo
             ivPoster = itemView.findViewById(R.id.iv_main_card_poster);
             tvTitle = itemView.findViewById(R.id.tv_main_card_title);
             tvVoteAverage = itemView.findViewById(R.id.tv_main_card_vote);
+            tvYear = itemView.findViewById(R.id.tv_main_card_year);
         }
         void onBindItemView(TvShow tvShow) {
             //add value for widget
@@ -72,6 +74,7 @@ public class TvShowAdapter extends RecyclerView.Adapter<TvShowAdapter.GridViewHo
             Glide.with(itemView.getContext()).load(Const.IMG_URL_200 + tvShow.getImgUrl()).into(ivPoster);
             tvTitle.setText(tvShow.getTitle());
             tvVoteAverage.setText(tvShow.getVoteAverage());
+            tvYear.setText(tvShow.getReleaseYear());
         }
         @Override
         public void onClick(View v) {
