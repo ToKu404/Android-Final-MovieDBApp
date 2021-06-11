@@ -5,13 +5,13 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import io.reactivex.rxjava3.core.Completable;
 
 import com.example.final_task_mobile.local.table.FavoriteMovie;
 import com.example.final_task_mobile.local.table.FavoriteTv;
 
 import java.util.List;
 
-import io.reactivex.Completable;
 
 @Dao
 public interface FavoriteDao {

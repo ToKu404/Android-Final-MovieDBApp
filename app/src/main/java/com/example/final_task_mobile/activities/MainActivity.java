@@ -6,7 +6,6 @@ import androidx.fragment.app.Fragment;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.text.Html;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -75,11 +74,12 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         }
     }
     private void actionBarSetTitle(String title) {
-        title = title.replaceAll("\\s","");
-        title += ".";
-        String first = title.substring(0,title.length()/2);
-        String end = title.substring(title.length()/2);
-        getSupportActionBar().setTitle(Html.fromHtml(first+"<font color=\"#2C83F5\">"+end+"</font>"));
+        getSupportActionBar().setTitle(title);
+//        title = title.replaceAll("\\s","");
+//        title += ".";
+//        String first = title.substring(0,title.length()/2);
+//        String end = title.substring(title.length()/2);
+//        getSupportActionBar().setTitle(Html.fromHtml(first+"<font color=\"#2C83F5\">"+end+"</font>"));
     }
 
     //nothing happen, for my disable my frame layout *JUST FOR UI*

@@ -69,7 +69,6 @@
             android:id="@+id/iv_poster_fav"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:src="@drawable/sample_poster"
             android:scaleType="centerCrop"/>
     </androidx.cardview.widget.CardView>
     <androidx.cardview.widget.CardView
