@@ -433,7 +433,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.btn_trailer:
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.youtube.com/watch?v="+trailer)));
+                actionOpenYoutube();
                 break;
             case R.id.tv_detail_synopsis:
                 actionExpand();
@@ -442,6 +442,12 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 actionExpand();
                 break;
         }
+    }
+
+    private void actionOpenYoutube() {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.youtube.com/watch?v="+trailer));
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivity(intent);
     }
 
     private void actionExpand() {
