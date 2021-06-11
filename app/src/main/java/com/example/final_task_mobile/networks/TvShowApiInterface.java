@@ -2,6 +2,7 @@ package com.example.final_task_mobile.networks;
 
 import com.example.final_task_mobile.models.CreditModel;
 import com.example.final_task_mobile.models.DetailModel;
+import com.example.final_task_mobile.models.VideosResponse;
 import com.example.final_task_mobile.models.tvshow.TvShowResponse;
 import com.example.final_task_mobile.models.tvshow.TvShowSimilarResponse;
 
@@ -44,4 +45,9 @@ public interface TvShowApiInterface {
         );
 
 
+        @GET("tv/{tv_id}/videos")
+        Call<VideosResponse> getTrailer(
+                @Path("tv_id") int id,
+                @Query("api_key") String apiKey
+        );
 }

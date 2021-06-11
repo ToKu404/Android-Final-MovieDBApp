@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,6 +32,7 @@ import com.example.final_task_mobile.local.table.FavoriteMovie;
 import com.example.final_task_mobile.local.table.FavoriteTv;
 import com.example.final_task_mobile.models.Cast;
 import com.example.final_task_mobile.models.Genre;
+import com.example.final_task_mobile.models.Videos;
 import com.example.final_task_mobile.models.movie.Movie;
 import com.example.final_task_mobile.models.CreditModel;
 import com.example.final_task_mobile.models.DetailModel;
@@ -42,6 +44,8 @@ import com.example.final_task_mobile.repository.callback.OnCastCallback;
 import com.example.final_task_mobile.repository.callback.OnDetailCallback;
 import com.example.final_task_mobile.repository.callback.OnMovieSimilarsCallback;
 import com.example.final_task_mobile.repository.callback.OnTvShowSimilarsCallback;
+import com.example.final_task_mobile.repository.callback.OnVideosCallback;
+import com.google.android.material.button.MaterialButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,12 +64,14 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     private TextView tvTitle, tvYear, tvDuration, tvSinopsis, tvRating, tvMore, tvHeaderSimilar;
     private RatingBar ratingBar;
     private RecyclerView rvGenre, rvCast, rvSimilar;
+    private MaterialButton btnTrailer;
 
     //attribut
     private int EXTRAS_ID;
     private String EXTRAS_TYPE;
-    private List<String> listGenre;
+    private String trailer;
     private List<Cast> listCast;
+    private List<String> listGenre;
 
     //local db attribut
     private RoomHelper roomHelper;
@@ -103,11 +109,12 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         rvGenre = findViewById(R.id.rv_genre);
         rvCast = findViewById(R.id.rv_cast);
         rvSimilar = findViewById(R.id.rv_similar_movie);
+        btnTrailer = findViewById(R.id.btn_trailer);
 
         //local db instance
         roomHelper = new RoomHelper(this);
-        listGenre = new ArrayList<>();
         listCast = new ArrayList<>();
+        listGenre = new ArrayList<>();
 
         //repository retrofit instance
         movieRepository = MovieRepository.getRetrofit();
@@ -241,7 +248,61 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
         //setting similar movie value
         configureSimilarValue();
+
+        //setting trailer  value
+        configureTrailer();
     }
+
+    private void configureTrailer() {
+        //check video url for movie
+        if(EXTRAS_TYPE.equals("movie")){
+            movieRepository.getMovieTrailer(EXTRAS_ID, new OnVideosCallback() {
+                @Override
+                public void onFailure(String message) {
+                }
+
+                @Override
+                public void onSuccess(List<Videos> videos) {
+                    //get movie value to list
+                    addTrailerValue(videos);
+                }
+            });
+        }
+        //check video url for tv
+        else if(EXTRAS_TYPE.equals("tv")){
+            tvShowRepository.getTvTrailer(EXTRAS_ID, new OnVideosCallback() {
+                @Override
+                public void onFailure(String message) {
+                }
+
+                @Override
+                public void onSuccess(List<Videos> videos) {
+                    //get movie value to list
+                    addTrailerValue(videos);
+                }
+            });
+        }
+    }
+
+    private void addTrailerValue(List<Videos> videos) {
+        //search first trailer in movie
+        trailer = "";
+        for(int i=0;i<videos.size();i++){
+            if(videos.get(i).getType().equals("Trailer")){
+                trailer = videos.get(i).getKey();
+                System.out.println(i);
+                break;
+            }
+        }
+        //check if trailer is null
+        if(!trailer.equals("")){
+            btnTrailer.setOnClickListener(this);
+            System.out.println(trailer);
+        }else{
+            btnTrailer.setVisibility(View.GONE);
+        }
+    }
+
 
     private void configureFavoriteValue(DetailModel detailModel) {
         // add value for favorite attribut
@@ -370,8 +431,16 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onClick(View v) {
-        if(v.getId()==R.id.tv_detail_synopsis || v.getId()==R.id.tv_detail_more){
-            actionExpand();
+        switch (v.getId()){
+            case R.id.btn_trailer:
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.youtube.com/watch?v="+trailer)));
+                break;
+            case R.id.tv_detail_synopsis:
+                actionExpand();
+                break;
+            case R.id.tv_detail_more:
+                actionExpand();
+                break;
         }
     }
 

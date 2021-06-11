@@ -2,6 +2,7 @@ package com.example.final_task_mobile.networks;
 
 import com.example.final_task_mobile.models.CreditModel;
 import com.example.final_task_mobile.models.DetailModel;
+import com.example.final_task_mobile.models.VideosResponse;
 import com.example.final_task_mobile.models.movie.MovieResponse;
 import com.example.final_task_mobile.models.movie.MovieSimilarResponse;
 
@@ -43,6 +44,11 @@ public interface MovieApiInterface {
             @Query("api_key") String apiKey
     );
 
+    @GET("movie/{movie_id}/videos")
+    Call<VideosResponse> getTrailer(
+        @Path("movie_id") int id,
+        @Query("api_key") String apiKey
+    );
 
 }
 

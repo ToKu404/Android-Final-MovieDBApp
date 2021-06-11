@@ -2,6 +2,7 @@ package com.example.final_task_mobile.repository;
 
 import com.example.final_task_mobile.models.CreditModel;
 import com.example.final_task_mobile.models.DetailModel;
+import com.example.final_task_mobile.models.VideosResponse;
 import com.example.final_task_mobile.models.tvshow.TvShowResponse;
 import com.example.final_task_mobile.models.tvshow.TvShowSimilarResponse;
 import com.example.final_task_mobile.networks.Const;
@@ -11,6 +12,7 @@ import com.example.final_task_mobile.repository.callback.OnDetailCallback;
 import com.example.final_task_mobile.repository.callback.OnTvShowCallback;
 import com.example.final_task_mobile.repository.callback.OnTvShowSearchCallback;
 import com.example.final_task_mobile.repository.callback.OnTvShowSimilarsCallback;
+import com.example.final_task_mobile.repository.callback.OnVideosCallback;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -163,5 +165,33 @@ public class TvShowRepository {
                         callback.onFailure(t.getLocalizedMessage());
                     }
                 });
+    }
+
+    //get movie detail
+    public void getTvTrailer(int id, final OnVideosCallback callback) {
+        tvService.getTrailer(id, Const.API_KEY).enqueue(new Callback<VideosResponse>() {
+            @Override
+            public void onResponse(Call<VideosResponse> call, Response<VideosResponse> response) {
+                System.out.println("URL :: "+ response.raw().request().url());
+                if (response.isSuccessful()) {
+                    if (response.body() != null) {
+                        if (response.body().getVideoResult()!= null) {
+                            callback.onSuccess(response.body().getVideoResult());
+                        } else {
+                            callback.onFailure("response.body().getResults() is null");
+                        }
+                    } else {
+                        callback.onFailure("response.body() is null");
+                    }
+                } else {
+                    callback.onFailure(response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<VideosResponse> call, Throwable t) {
+
+            }
+        });
     }
 }
